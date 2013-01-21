@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+struct integer {
+    int * digits ; 
+    int size ; 
+}
 void printThis(char* this, int size){
     printf("\n");
     int i = 0 ; 
@@ -36,8 +41,11 @@ void readFile(char *fileName){
     //free(buffer);
     printf("\nPassing to printThis Function");
     printThis(buffer,length-1); 
+    reReadFile(buffer,length-1);
 }
-
+struct integer * reReadFile(char* bufr){
+    
+}
 int main(){
     char filename[] = "file.txt" ; 
     char * ff ;
