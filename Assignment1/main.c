@@ -45,16 +45,24 @@ struct integer * convert_integer ( char * stringInt ){
         }
     }
     struct integer * p = malloc(sizeof(struct integer));
-    p->size = k ; 
+    p->size = k+1 ; 
     p->digits = malloc(sizeof(int)*p->size) ; 
     //printf("from convert_int: ",p->digits[k]);
     for ( ; k > -1 ; k-- ) {
         p->digits[k] = stringInt[k] - '0'; 
-        printf("%d",p->digits[k]);
+        //printf("%d",p->digits[k]);
     }
     return p ; 
 }
 int main(){
-    struct integer * p = convert_integer(readChars(fileName)) ; 
+    char * readCh = readChars(fileName) ; 
+    struct integer * p = convert_integer(readCh) ; 
+    int k ;
+    for ( k = p->size-1 ; k > -1 ; k-- ) {
+        printf("%d",p->digits[k]);
+    }
+    printf("\nSize of int: %lu",sizeof(int));
+    printf("\nSize of p->size: %d",p->size);
+    printf("\nSize of p->size*sizeof(int): %lu",sizeof(int)*p->size);
 }
 
