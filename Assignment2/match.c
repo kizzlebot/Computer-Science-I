@@ -65,14 +65,19 @@ void recursiveMatch( struct male ** men, struct female ** ladies, int n, int k )
 	// Base Case
 	if (k == n) {
 		// compute likeability quotient for given arrangement
+		printf("\n\n");
 		for ( i = 0 ; i < n ; i++ ){
 			printf("%s, ",ladies[i]->fName);
 		}
 		printf("\n");
+		for ( i = 0 ; i < n ; i++ ){
+			printf("%s, ",men[i]->mName);
+		}
+		
 	}else{
 		for ( j = k ; j < n; j++){
 			ExchangeMatch(ladies,k,j);
-
+			printf("%d %d",j,k);
 			recursiveMatch(men,ladies,n,k+1);
 
 			ExchangeMatch(ladies,j,k); 
@@ -87,8 +92,12 @@ int main(){
 	fscanf(file, "%d", &events ); // Read first two lines
 	fscanf(file, "%d" ,&couples );
 	struct couple * coupleSet = readIn(file,couples) ;
+	int i = 0 ; 
 
-	recursiveMatch(coupleSet->men, coupleSet->ladies, 3, 0) ; 
+	recursiveMatch(coupleSet->men, coupleSet->ladies, couples, 0) ; 
+	//for ( i = 0 ; i < couples ; i++ ){
+	//	printf("%s, ",coupleSet->ladies[i]->fName);	
+	//}
 }
 
 
