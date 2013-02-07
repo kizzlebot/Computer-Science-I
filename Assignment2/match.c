@@ -3,6 +3,8 @@
 #include <string.h>
 char filename[] = "infile.txt";
 
+/*	Each instance of struct Male and Female can be though as a single individual involved in the matchmaking process
+	who each have their score of favor for blind date. */
 struct male {
 	int * score ; 
 	char * mName ; 
@@ -11,25 +13,88 @@ struct female{
 	int * score ; 
 	char * fName ; 
 };
+/*------ This structure sole purpose is to hold the array of pointers of males and array of pointers of females -----*/
 struct couple {
-	struct female ** ladies ; 
-	struct male ** men; 
+	struct male ** men;  // Plural! Because (struct male **), it is like a 'group of males', ie men
+	struct female ** ladies ;  
 };
-char * removeNewLine(char * str){
-	int j = 0 ; 
+/*----------------------------------------------------------------------------------
+//  Function: makejjMenPtrs
+//  Arguments: (int) members - Number people of each gender
+//  Return type:  (struct male **) 
+//  Description:  Allocates and returns (struct male ** ) which is essentially an array of pointers ( struct male *).  
+//                The number of elements of the struct male ** is the number of members of the gender male.
+//				  And since the number of members is also the number of scores each male has to have for each female,
+//				  the 'score' integer array is also allocated.
+----------------------------------------------------------------------------------*/
+struct male ** makeMenPtrs(int members) ;
+/*----------------------------------------------------------------------------------
+//  Function: makeLadiesPtrs
+//  Arguments: (int) members - Number people of each gender
+//  Return type:  (struct female **) 
+//  Description:  Allocates and returns (struct female ** ) which is essentially an array of the pointer type ( struct female *).  
+//                The number of elements of the struct female ** is the number of members of the gender female.
+//				  And since the number of members is also the number of scores each female has to have for each female,
+//				  the 'score' integer array is also allocated.
+----------------------------------------------------------------------------------*/
+struct female ** makeLadiesPtrs(int members);
+/*----------------------------------------------------------------------------------
+//  Function: readIn
+//  Arguments: (File * )file, (int) couples
+//  Return type:  (struct female **) 
+//  Description:  Reads file line by line and splits up the information and assigns to 
+// 				  Uses the information read to call makeMenPtrs and makeLadiesPtrs with 
+//				  parameter of members to allocate correct sizes and returns
+//
+----------------------------------------------------------------------------------*/
+struct couple * readIn(FILE * file, int couples);
+char * removeNewLine(char * str);
 
-	for( j = 0 ; j < strlen(str) ; j++)
-	{
-		if ( str[j] == '\n')
-		{
-			str[j] = '\0' ; 
+
+void ExchangeMatch(struct female ** ladies, int a, int b) ;
+//----------------------------------------------------------------------------------
+// (int) n : number of members of each gender, which is equal to the number of couples
+// (int) k : lower bound 
+// We're going to keep the set of men fixed and permute female order. We will calculate a new 
+// Likeability quotient for each permute
+//----------------------------------------------------------------------------------
+int ind= 0  ; 
+void recursiveMatch( struct male ** men, struct female ** ladies, int n, int k ){
+	int j ; 
+	int i ;
+	// Base Case
+	if (k == n) {
+		// compute likeability quotient for given arrangement
+		for ( i = 0 ; i < n ; i++ ){
+			printf("%s, ",ladies[i]->fName);
+		}
+		printf("\n");
+	}else{
+		for ( j = k ; j < n; j++){
+			ExchangeMatch(ladies,k,j);
+
+			recursiveMatch(men,ladies,n,k+1);
+
+			ExchangeMatch(ladies,j,k); 
 		}
 	}
-	return str ; 
 }
+/* */
+
+int main(){
+	FILE * file = fopen(filename, "r") ; 
+	int events, couples ; 
+	fscanf(file, "%d", &events ); // Read first two lines
+	fscanf(file, "%d" ,&couples );
+	struct couple * coupleSet = readIn(file,couples) ;
+
+	recursiveMatch(coupleSet->men, coupleSet->ladies, 3, 0) ; 
+}
+
+
+
 struct male ** makeMenPtrs(int members) {
 	int i = 0 ;
-
 	struct male ** men = malloc(sizeof(struct male *)*members+1);
 	men[members+1] = NULL ; 
 	for ( i = 0 ; i < members ; i++){
@@ -41,7 +106,7 @@ struct male ** makeMenPtrs(int members) {
 }
 struct female ** makeLadiesPtrs(int members){
 	int i = 0 ; 
-	struct female ** ladies = malloc(sizeof(struct female *)*members+1);
+	struct female ** ladies = (struct female ** )malloc(sizeof(struct female *)*members+1);
 	ladies[members+1] = NULL ; 
 	for ( i = 0 ; i < members ; i++){
 		ladies[i] = malloc(sizeof(struct female)) ; 
@@ -50,7 +115,6 @@ struct female ** makeLadiesPtrs(int members){
 	}
 	return ladies ; 
 }
-
 struct couple * readIn(FILE * file, int couples){
 	
 	int i = 0 ; 
@@ -91,16 +155,21 @@ struct couple * readIn(FILE * file, int couples){
 
 	return cpl ; 
 }
-
-int main(){
-	FILE * file = fopen(filename, "r") ; 
-	int events, couples ; 
+void ExchangeMatch(struct female ** ladies, int a, int b) {
+	struct female * templady = malloc(sizeof(struct female )) ; 
+	templady = ladies[a];
+	ladies[a] = ladies[b] ; 
+	ladies[b] = templady ; 
+	free(templady) ; 
+}
+char * removeNewLine(char * str){
 	int j = 0 ; 
-	int i = 0 ;
-	fscanf(file, "%d", &events ); // Read first two lines
-	fscanf(file, "%d" ,&couples );
-	
-	struct couple * coupleSet = readIn(file,couples) ; 
-	
-	
+	for( j = 0 ; j < strlen(str) ; j++)
+	{
+		if ( str[j] == '\n')
+		{
+			str[j] = '\0' ; 
+		}
+	}
+	return str ; 
 }
