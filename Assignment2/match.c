@@ -8,16 +8,23 @@ char filename[] = "infile.txt";
 struct male {
 	int * score ; 
 	char * mName ; 
+	int number ; 
+	int * min ; 
+	int * diff ; 
 };
 struct female{
 	int * score ; 
 	char * fName ; 
+	int number ; 
 };
 /*------ This structure sole purpose is to hold the array of pointers of males and array of pointers of females -----*/
 struct couple {
 	struct male ** men;  // Plural! Because (struct male **), it is like a 'group of males', ie men
-	struct female ** ladies ;  
+	struct female ** ladies ; 
+	int * order ;  // holds the order 1 2 3, 1 3 2, 3 2 1 etc
+
 };
+
 /*----------------------------------------------------------------------------------
 //  Function: makejjMenPtrs
 //  Arguments: (int) members - Number people of each gender
@@ -49,7 +56,7 @@ struct female ** makeLadiesPtrs(int members);
 ----------------------------------------------------------------------------------*/
 struct couple * readIn(FILE * file, int couples);
 char * removeNewLine(char * str);
-
+int factorial(int n);
 
 void ExchangeMatch(struct female ** ladies, int a, int b) ;
 //----------------------------------------------------------------------------------
@@ -59,68 +66,120 @@ void ExchangeMatch(struct female ** ladies, int a, int b) ;
 // Likeability quotient for each permute
 //----------------------------------------------------------------------------------
 int ind= 0  ; 
-void recursiveMatch( struct male ** men, struct female ** ladies, int n, int k ){
+
+int recursiveMatch( struct male ** men, struct female ** ladies,int n, int k ,int  p, int * currLow){
 	int j ; 
 	int i ;
+	
+
 	// Base Case
+
 	if (k == n) {
+		int sum = 0  ;
+		int diff = 0 ; 
 		// compute likeability quotient for given arrangement
-		printf("\n\n");
-		for ( i = 0 ; i < n ; i++ ){
-			printf("%s, ",ladies[i]->fName);
+		for ( i = 1 ; i < n ; i++){
+
+			//printf("\n%s  (score: %s:%d) <-%d-> %s (score: %s:%d)",ladies[i]->fName,men[i]->mName,ladies[i]->score[i],i,men[i]->mName,ladies[i]->fName,men[i]->score[ladies[i]->number]);
+			//printf("\n %s->%s %d",men[i]->mName,ladies[i]->fName, men[i]->score[ladies[i]->number]);
+			// if ladies score greater than men's score	
+			if ( ladies[i-1]->score[i-1] > men[i-1]->score[ladies[i-1]->number]){
+				//men[i-1]->min[ladies[i]->number] = men[i]->score[ladies[i]->number] ; 
+				men[i-1]->min[ladies[i-1]->number] = men[i-1]->score[ladies[i-1]->number] ; 
+				men[i-1]->diff[ladies[i-1]->number] = ladies[i-1]->score[i-1] - men[i-1]->score[ladies[i-1]->number];
+
+				
+			// if ladies score less than men's score	
+			}else if ( ladies[i-1]->score[i-1] < men[i-1]->score[ladies[i-1]->score[i-1]]){
+				men[i]->min[ladies[i]->number] = ladies[i]->score[i] ; 
+				men[i-1]->diff[ladies[i-1]->number] = men[i-1]->score[ladies[i-1]->number] - ladies[i-1]->score[i-1];  
+
+			// all else	
+			}else{
+				men[i-1]->min[ladies[i-1]->number] = ladies[i-1]->score[i-1] ; // eqal to each other 
+				men[i-1]->diff[ladies[i-1]->number] = men[i-1]->score[ladies[i-1]->number] - ladies[i-1]->score[i-1];  				
+				
+			}
+			printf("\n Low: %d, Diff: %d",men[i-1]->min[ladies[i-1]->number],men[i-1]->min[ladies[i-1]->number]);
+			sum+=men[i-1]->min[ladies[i-1]->number];
+			diff+=men[i-1]->diff[ladies[i-1]->number];
 		}
-		printf("\n");
-		for ( i = 0 ; i < n ; i++ ){
-			printf("%s, ",men[i]->mName);
+		printf("The sum %d",sum);
+		if ( sum < *(currLow) ){
+			*currLow = sum ; 
+			printf("\nSUM %d: %d",p, *currLow);
+			sum = 0 ; 	
 		}
-		
-	}else{
+		else if (sum == *(currLow)){
+		// figure out the least diff
+			
+			
+		}
+	}
+	else{
 		for ( j = k ; j < n; j++){
 			ExchangeMatch(ladies,k,j);
-			printf("%d %d",j,k);
-			recursiveMatch(men,ladies,n,k+1);
-
+			printf("\nSUM %d: %d",p, *currLow);
+			//printf("\n%s",ladies[j]->fName);
+			recursiveMatch(men,ladies,n,k+1,p+1,currLow);
 			ExchangeMatch(ladies,j,k); 
 		}
 	}
+	return *currLow; 
 }
 /* */
 
 int main(){
 	FILE * file = fopen(filename, "r") ; 
-	int events, couples ; 
+	int events, couples ; 	
 	fscanf(file, "%d", &events ); // Read first two lines
 	fscanf(file, "%d" ,&couples );
 	struct couple * coupleSet = readIn(file,couples) ;
-	int i = 0 ; 
-
-	recursiveMatch(coupleSet->men, coupleSet->ladies, couples, 0) ; 
-	//for ( i = 0 ; i < couples ; i++ ){
-	//	printf("%s, ",coupleSet->ladies[i]->fName);	
-	//}
+	int i = 0 ;
+	int j = 0 ; 
+	int  low  ;
+	low = 20 ;
+	low  = recursiveMatch(*&coupleSet->men, coupleSet->ladies,couples,0,0,&(low))  ; 
+	printf("\n\n%d",low);
+	for ( i = 0 ; i < couples ; i++ ){
+		for ( j = 0 ; j < factorial(couples) ; j++){
+			printf("\n%s %d, ",coupleSet->men[i]->mName,coupleSet->men[i]->min[j]);	
+		} 
+	}
 }
 
-
+int factorial(int n){
+	int i = 0 ;
+	int factorial = 1; 
+	for ( i = 1 ; i < n+1 ; i++){
+		factorial*=i ; 
+	}
+	return factorial ; 
+}
 
 struct male ** makeMenPtrs(int members) {
 	int i = 0 ;
 	struct male ** men = malloc(sizeof(struct male *)*members+1);
-	men[members+1] = NULL ; 
+
 	for ( i = 0 ; i < members ; i++){
 		men[i] = malloc(sizeof(struct male)) ; 
 		men[i]->score = malloc(sizeof(int)*members) ; 
-		men[i]->mName = malloc(sizeof(char)*19) ; 
+		men[i]->mName = malloc(sizeof(char)*10) ; 
+		men[i]->min = malloc(sizeof(int)*10 );
+		men[i]->diff = malloc(sizeof(int)*10);
+		men[i]->number = i ; 
 	}
 	return men ; 
 }
 struct female ** makeLadiesPtrs(int members){
 	int i = 0 ; 
 	struct female ** ladies = (struct female ** )malloc(sizeof(struct female *)*members+1);
-	ladies[members+1] = NULL ; 
+
 	for ( i = 0 ; i < members ; i++){
 		ladies[i] = malloc(sizeof(struct female)) ; 
 		ladies[i]->score = malloc(sizeof(int)*members) ; 
 		ladies[i]->fName = malloc(sizeof(char)*19) ; 
+		ladies[i]->number = i ;
 	}
 	return ladies ; 
 }
@@ -137,30 +196,27 @@ struct couple * readIn(FILE * file, int couples){
 		fscanf(file,"%s",men[j]->mName);
 		removeNewLine(men[j]->mName);
 	}
+
 	for ( j = 0 ; j < couples ; j++){
 		fscanf(file, "%s", ladies[j]->fName) ; 
 		removeNewLine(ladies[j]->fName);
 	}
-
 
 	for ( j = 0 ; j < couples ; j++){
 		for ( i = 0 ; i < couples ; i++ ){
 			fscanf(file,"%d",&men[j]->score[i]);
 			//printf("%d ",men[j]->score[i]) ; 
 		}
-
 	}
 	for ( j = 0 ; j < couples ; j++){
 		for ( i = 0 ; i < couples ; i++ ){
 			fscanf(file,"%d",&ladies[j]->score[i]);
 			//printf("%d ",ladies[j]->score[i]);
 		}
-
 	}
 	struct couple * cpl = malloc(sizeof(struct couple));
 	cpl->men = men ; 
 	cpl->ladies = ladies ; 
-
 
 	return cpl ; 
 }

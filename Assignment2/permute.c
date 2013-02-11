@@ -5,23 +5,25 @@
 
 #include <stdio.h>
 #include <string.h>
-void ListPermutations(char str[]);
-void RecursivePermute(char str[], int k);
+void ListPermutations(char str[],int n );
+void RecursivePermute(char str[], int n ,int k);
 void ExchangeCharacters(char str[], int i, int j);
 
 int main() {
     
-    char word[20];
+    char word[] = "James" ; 
     
     // Let the user enter a word to permute.
-    printf("Please enter a word you would like to permute.\n");
-    scanf("%s", word);
-    
+    //printf("Please enter a word you would like to permute.\n");
+    //scanf("%s", word);
+    int n ; 
+    printf("Please enter a number would like to permute: ");
+    scanf("%d", &n);
     // Print out the permutations.
     printf("\nHere are the permutations:\n\n");
-    ListPermutations(word);
+    ListPermutations(word,n);
     
-
+    system("PAUSE");
     return 0;
     
 }
@@ -29,11 +31,12 @@ int main() {
 // Pre-condition: str is a valid C String.
 // Post-condition: All permutations of str (assuming all distinct
 //                 characters) will be printed.
-void ListPermutations(char str[]) {
+void ListPermutations(char str[],int n) {
      
      // Call the appropriate recursive function with the correct
      // parameters.
-     RecursivePermute(str, 0);
+
+     RecursivePermute(str,n,0);
 }
 
 // Pre-condition: str is a valid C String, and k is non-negative and
@@ -42,27 +45,27 @@ void ListPermutations(char str[]) {
 //                 characters fixed in their original positions are
 //                 printed. Namely, if n is the length of str, then
 //                 (n-k)! permutations are printed.
-void RecursivePermute(char str[], int k) {
+void RecursivePermute(char str[],int n, int k) {
      
      int j;
      
      // Base-case:     Since all letters are fixed, we can ONLY print
      // what's stored in str.
-     if (k == strlen(str))
-         printf("%s %d\n", str); 
+     if (k-n == strlen(str))
+         printf("%s\n", str); 
          
      else {
-        printf("%s %d\n", str,k); 
+          
          // Loop through each possible starting letter for index k,
          // the first index for which we have a choice.
          for (j=k; j<strlen(str); j++) {
-
-             // Place the character stored in index j in location k.
+         
+            // Place the character stored in index j in location k.
              ExchangeCharacters(str, k, j);
-
+             
              // Print out all of the permutations with that character
              // just chosen above fixed. 
-             RecursivePermute(str, k+1);
+             RecursivePermute(str,n, k+1);
              
              // Put the original character that used to be there back
              // in its place.
