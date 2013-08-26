@@ -1,63 +1,99 @@
 #include <stdio.h>
 #include <stdlib.h>
-/*
- * This program calculates the sum of n number of primes 
- *   P(1) = 2
- *	 P(2) = 1+2 = 3
- *	 P(3) = 2+3+5 = 10
- *	 P(4) = 2+3+5+7 = 17
- */
 
 struct readIn* readFile();
+
+int* nthPrime(int n);
 void printVar(struct readIn* read);
+void printPrimeSum (struct  readIn * read);
 struct readIn{
-  int* read ;
-  int size ; 
+	int* read ;
+	int size ; 
+	int largest;
 };
 
 int main(){
-  struct readIn * read = readFile();
-  printVar(read);
+	struct readIn * read = readFile();
+	//printVar(read);
+	//int * x = nthPrime(20000);
+	printPrimeSum(read);
 }
 
 struct readIn* readFile(){
-  FILE * infile;
-  FILE * outfile;
-  int BUFFER = 10 ;
-  // Open file for reading
-  infile  = fopen(  "primes.txt",   "r" );
+	FILE * infile;
+	FILE * outfile;
+	int BUFFER = 10 ;
+	// Open file for reading
+	infile  = fopen(  "primesum.in",   "r" );
 	int temp ;
 
-  struct readIn* read = malloc(sizeof(struct readIn)) ;
+	struct readIn* read = malloc(sizeof(struct readIn)) ;
 	read->read = malloc(sizeof(int)*BUFFER);
-  read->size = BUFFER ; 
-  int i = 0 ;  
+	read->size = BUFFER ; 
+	int i = 0 ;  
+	read->largest = 1 ; 
 	while (fscanf(infile,"%d",&temp)!= EOF){
+		if (temp > read->largest ){
+			read->largest = temp ; 
+		}
 		read->read[i] = temp;
-    i++ ;
-    if ( i == BUFFER ){
-      BUFFER=BUFFER+10;
-      read->read = realloc(read->read,BUFFER);
-    }
+		i++ ;
+		if ( i == BUFFER ){
+			  BUFFER=BUFFER+10;
+			  read->read = realloc(read->read,BUFFER);
+		}
 	}			
-  read->size = i ; 
-  read->read = realloc(read->read,read->size);
-  return read ; 
+	read->size = i ; 
+	read->read = realloc(read->read,read->size);
+	return read ; 
+}
+
+void printPrimeSum (struct readIn * read){
+	int i = 0 ;
+	int sum = 0 ;
+	int j = 0 ; 	 
+	int * primeList = nthPrime(read->largest);	
+	for ( i = 0 ; i < read->size ; i++){
+		for ( j = 0 ; j < read->read[i] ; j++){
+			sum+=primeList[j] ; 				
+		}
+		printf("%d\n",sum);
+		sum = 0 ; 
+		free(primeList);
+	}
 }
 void printVar(struct readIn* read){
-  int i = 0 ; 
-  for ( i = 0 ; i < read->size ; i++){
-    printf("%d\n",read->read[i]);
-  }
-  printf("Size = %d\n",read->size);
+	int i = 0 ; 
+	for ( i = 0 ; i < read->size ; i++){
+		printf("%d\n",read->read[i]);
+	}
+	printf("Size = %d\n",read->size);
 }
-void nthPrime(int n){
-  int p = 10000 ;
-  k = 3 ;  
-  int i = 1 ; 
-  for ( i = 2 ; i < k ;i++){
-    if ( k%i == 0 ){
-      
-    }
-  } 
+int* nthPrime(int n){
+	int nthPrime = n; 
+	int currentPrime = 6 ; 
+	int* primeList = malloc(sizeof(int)*nthPrime) ; 
+	int i, j ; 
+	primeList[0] = 1;
+	primeList[1] = 2;
+	primeList[2] = 3;
+	primeList[3] = 5;
+	if ( n < 5 ){
+		return primeList ; 	
+	}
+	else{	
+		for ( i = 3 ; i < nthPrime ;){
+			for ( j = 2 ; j < currentPrime ; j++){
+				if ( currentPrime%j == 0 ){
+					break ; 
+				}
+			}
+			if ( j == currentPrime ){
+				i++;
+				primeList[i] = currentPrime ; 
+				//printf("%d\n",primeList[i]);
+			}
+			currentPrime++ ; 
+		}
+	}
 }
