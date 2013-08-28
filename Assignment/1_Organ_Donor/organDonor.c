@@ -49,21 +49,22 @@ void printPatient(organT * patient){
 	}
 }
 int main(){
-	// Each line will contain the 
-	// person's name 
-	// the organ they need replaced
-	// their blood type 
-	// the date they were added to the organ database 
-	// and the time they were added to the organ database	
 	FILE * infile = fopen("organ.in","r");
 	int numLines ;
+	// Get the first line
 	fscanf(infile,"%d",&numLines);
-
+	// Allocate a pointer of pointers and all the points contained within lol
 	organT ** patient = allocate(numLines);
 	
 	int i = 0 ; 
+	// scan an print
 	while ( i < numLines ){
-		fscanf(infile,"%s %s %s %s %s",(patient[i]->name),(patient[i]->organname),(patient[i]->bloodtype),(patient[i]->dateAdded),(patient[i]->timeAdded));
+		// Scan that shit
+		fscanf(infile,"%s %s %s %s %s",(patient[i]->name),
+									   (patient[i]->organname),
+									   (patient[i]->bloodtype),
+									   (patient[i]->dateAdded),
+									   (patient[i]->timeAdded));
 		printPatient(patient[i]);
 		i++ ; 
 	}
