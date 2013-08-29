@@ -1,3 +1,14 @@
+/*
+ * Name: James Choi
+ * Date: August 28, 2013
+ * Course: Computer-Science I (10:30AM-11:20AM)
+ * Submission: Assignment #1 (Organ Donor)
+ * Description: This program reads in a file containing information about patients
+ *              on a waiting list for organ transplant, as well as a list of
+ *              donated organs. It matches donated organ with compatible
+ *              users on the waiting list; writing the result to the output
+ *
+ **/
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -40,12 +51,54 @@ typedef struct {
 ////////////////////////////////////////////////////////////////////
 ///////////////////// Function prototypes  ////////////////////////
 ///////////////////////////////////////////////////////////////////
-organT ** allocate(int numLines);
-void printPatient(organT * patient);
-organT ** readPatients(FILE * infile);
-Donor ** readDonorList(FILE * infile);
-void findPair(FILE * outfile, Donor ** donorList , organT ** patient);
 
+///////////////////////////////////////////////////////////////////
+// Function: allocate
+// Argument: numLines (Number to allocate)
+// Return:   A dynamically allocated array of people on the waiting list
+// Description: Allocate patient list
+///////////////////////////////////////////////////////////////////
+organT ** allocate(int numLines);
+///////////////////////////////////////////////////////////////////
+// Function: printPatient
+// Argument: patient (single patient *)
+// Return:   void
+// Description: Debug purpose
+///////////////////////////////////////////////////////////////////
+void printPatient(organT * patient);
+///////////////////////////////////////////////////////////////////
+// Function: readPatients
+// Argument: infile (A file pointer instance)
+// Return:   organT ** containing a populated patient list
+// Description: Reads in infile, allocates and returns a populate list
+///////////////////////////////////////////////////////////////////
+organT ** readPatients(FILE * infile);
+///////////////////////////////////////////////////////////////////
+// Function:  readDonorList
+// Argument:  infile
+// Return:    Donor ** which is an array of organ/bloodtype data struct
+// Description: Reads infile, allocates and populates Donor **
+///////////////////////////////////////////////////////////////////
+Donor ** readDonorList(FILE * infile);
+///////////////////////////////////////////////////////////////////
+// Function: findPair,
+// Argument: outfile, donorList, patient
+// Return:   void
+// Description:  Given the file to output to, a list of donors and patients
+//               For every organ donated, will match with patient on waiting
+//               list.
+///////////////////////////////////////////////////////////////////
+void findPair(FILE * outfile, Donor ** donorList , organT ** patient);
+///////////////////////////////////////////////////////////////////
+// Function:  orgPatientByOrgan
+// Argument:  patient
+// Return:    void
+// Description:  Given an array of patients, for each patient and organ they
+//               requested, it will find another patient in the list who
+//               requested the same organ, and will swap places if individual
+//               further down in the list precedes the current
+///////////////////////////////////////////////////////////////////
+void orgPatientByOrgan(organT ** patient);
 
 int main(){
 	FILE * infile = fopen("organ.in","r");
@@ -56,14 +109,81 @@ int main(){
     findPair(outfile,donorList,patient);
 }
 
+////////////////////////////////////////////////////////////////////
+///////////////////// Function Definitions ////////////////////////
+///////////////////////////////////////////////////////////////////
+void orgPatientByOrgan(organT ** patient){
+    int i = 0 ;
+    int listLength = 0 ;
+    int compareLimit = 100 ;
+    int listSize = 0 ;
+    int matchesFound = 0 ;
+    // First count the number of patients requesting organ
+    while ( patient[i] != NULL ){
+        listSize++ ;
+        i++ ;
+    }
+    // Go through the list of patients and find the req. organ, then look ahead
+    // and find somebody else requesting the same thing.
+    // Sort by dateAdded, if
+    // the dates are the same then sort by time.
+    int j = 0 ;
+    for ( i = 0 ; i < listSize ; i++ ){
+        for (j = i ; j < listSize ; j++ ){
+            // If two people want the same organ
+            if(strncmp(patient[i]->organname,patient[j]->organname,compareLimit)==0){
+                // compare year
+                if ( patient[i]->dateAdded.year > patient[j]->dateAdded.year ){
+                    organT * fPatient = patient[j] ;
+                    patient[j] = patient[i] ;
+                    patient[i] = fPatient ;
+                }
+                // compare month
+                else if ( patient[i]->dateAdded.month > patient[j]->dateAdded.month &&  patient[i]->dateAdded.year == patient[j]->dateAdded.year ){
+                    organT * fPatient = patient[j] ;
+                    patient[j] = patient[i] ;
+                    patient[i] = fPatient ;
+                }
+                // compare date
+                else if ( patient[i]->dateAdded.day > patient[j]->dateAdded.day && patient[i]->dateAdded.month == patient[j]->dateAdded.month &&
+                          patient[i]->dateAdded.year == patient[j]->dateAdded.year ){
+                    organT * fPatient = patient[j] ;
+                    patient[j] = patient[i] ;
+                    patient[i] = fPatient ;
+                }
+                // compare time if dates are the same
+                else if ( patient[i]->dateAdded.day == patient[j]->dateAdded.day && patient[i]->dateAdded.month == patient[j]->dateAdded.month &&
+                          patient[i]->dateAdded.year == patient[j]->dateAdded.year ){
+                    if ( patient[i]->timeAdded.hour > patient[j]->timeAdded.hour){
+                        organT * fPatient = patient[j] ;
+                        patient[j] = patient[i] ;
+                        patient[i] = fPatient ;
+                    }
+                    else if ( patient[i]->timeAdded.hour ==  patient[j]->timeAdded.hour && patient[i]->timeAdded.minute > patient[j]->timeAdded.minute){
+                        organT * fPatient = patient[j] ;
+                        patient[j] = patient[i] ;
+                        patient[i] = fPatient ;
+                    }
+                    else{
+                        continue ;
+                    }
+                }
+                else{
+                    continue ;
+                }
+            }
+        }
+
+    }
+}
 void findPair(FILE * outfile, Donor ** donorList , organT ** patient){
     int i = 0 ;
     int j = 0 ;
     int compareLimit = 100 ;
     int result = 0 ;
+    orgPatientByOrgan(patient);
     while ( donorList[i] != NULL ){
         while ( patient[j] != NULL ){
-
             if ( strncmp( donorList[i]->organ,patient[j]->organname,compareLimit)==0 && strncmp( donorList[i]->bloodType ,patient[j]->bloodtype,compareLimit)==0 && patient[j]->received != 1 ){
                 patient[j]->received = 1 ;
                 fprintf(outfile,"%s %s\n",patient[j]->name,donorList[i]->organ);
@@ -74,6 +194,7 @@ void findPair(FILE * outfile, Donor ** donorList , organT ** patient){
         }
         if ( patient[j] == NULL ){
             fprintf(outfile,"No match found\n");
+            j = 0 ;
         }
         i++ ;
     }
@@ -148,3 +269,4 @@ Donor ** readDonorList(FILE * infile){
     donorList[numLines] = NULL;
     return donorList;
 }
+
