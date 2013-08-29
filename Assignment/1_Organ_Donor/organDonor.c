@@ -5,17 +5,23 @@
 #define BLOODTYPESIZE 4
 
 
+////////////////////////////////////////////////////////////////////
+//////////////////////// Data Structures ///////////////////////////
+///////////////////////////////////////////////////////////////////
+// Date
 typedef struct {
 	int month;
 	int day;
 	int year;
 } dateT;
 
+// Time
 typedef struct {
 	int hour;
 	int minute;
 } timeT;
 
+// Patient on waiting list
 typedef struct {
 	char * name;
 	char * organname;
@@ -24,10 +30,54 @@ typedef struct {
 	timeT timeAdded;
 	int received;
 } organT;
+
+// Donated Organ
 typedef struct {
     char * organ ;
     char * bloodType ;
 }Donor ;
+
+////////////////////////////////////////////////////////////////////
+///////////////////// Function prototypes  ////////////////////////
+///////////////////////////////////////////////////////////////////
+organT ** allocate(int numLines);
+void printPatient(organT * patient);
+organT ** readPatients(FILE * infile);
+Donor ** readDonorList(FILE * infile);
+void findPair(FILE * outfile, Donor ** donorList , organT ** patient);
+
+
+int main(){
+	FILE * infile = fopen("organ.in","r");
+	organT ** patient = readPatients(infile);
+    Donor ** donorList = readDonorList(infile);
+	FILE * outfile= fopen("organ.out","w");
+
+    findPair(outfile,donorList,patient);
+}
+
+void findPair(FILE * outfile, Donor ** donorList , organT ** patient){
+    int i = 0 ;
+    int j = 0 ;
+    int compareLimit = 100 ;
+    int result = 0 ;
+    while ( donorList[i] != NULL ){
+        while ( patient[j] != NULL ){
+
+            if ( strncmp( donorList[i]->organ,patient[j]->organname,compareLimit)==0 && strncmp( donorList[i]->bloodType ,patient[j]->bloodtype,compareLimit)==0 && patient[j]->received != 1 ){
+                patient[j]->received = 1 ;
+                fprintf(outfile,"%s %s\n",patient[j]->name,donorList[i]->organ);
+                j = 0 ;
+                break ;
+            }
+            j++ ;
+        }
+        if ( patient[j] == NULL ){
+            fprintf(outfile,"No match found\n");
+        }
+        i++ ;
+    }
+}
 
 organT ** allocate(int numLines){
 	organT ** patient = (organT ** )malloc(sizeof(organT *)*(numLines+1));
@@ -56,7 +106,6 @@ void printPatient(organT * patient){
 }
 organT ** readPatients(FILE * infile){
 	int numLines ;
-    char ch = 'c';
 	// Get the first line
 	fscanf(infile,"%d",&numLines);
 	// Allocate a pointer of pointers and all the points contained within lol
@@ -65,29 +114,22 @@ organT ** readPatients(FILE * infile){
 	int i = 0 ;
 	// scan an print
 	while ( i < numLines ){
+        // Make a throwaway variable to hold the characters "/" and ":"
+        char ch ;
 		// Scan that shit
         dateT dateAdded  ;
         timeT timeAdded  ;
-		fscanf(infile,"%s %s %s %d%c%d%c%d %d%c%d",
-                                       (patient[i]->name),
-									   (patient[i]->organname),
-									   (patient[i]->bloodtype),
-									   (&dateAdded.month),
-                                       (&ch),
-									   (&dateAdded.day),
-                                       (&ch),
-									   (&dateAdded.year),
-
-                                       (&timeAdded.hour),
-                                       (&ch),
-									   (&timeAdded.minute)
-                                       );
+		fscanf(infile,"%s %s %s %d%c%d%c%d %d%c%d",(patient[i]->name),(patient[i]->organname),(patient[i]->bloodtype),
+                                                   //  Month            /        Day            /      year
+                                                   (&dateAdded.month),(&ch),(&dateAdded.day),(&ch),(&dateAdded.year),
+                                                   //    Hour           :      Minute
+                                                   (&timeAdded.hour),(&ch),(&timeAdded.minute));
         patient[i]->dateAdded = dateAdded ;
         patient[i]->timeAdded= timeAdded;
 		printPatient(patient[i]);
 		i++ ;
 	}
-    i = 0 ;
+
 	return patient ;
 }
 Donor ** readDonorList(FILE * infile){
@@ -96,40 +138,13 @@ Donor ** readDonorList(FILE * infile){
     fscanf(infile,"%d",&numLines);
     Donor ** donorList = (Donor **)malloc(sizeof(Donor*)*(numLines+1));
     while (i < numLines){
-        donorList[i]->organ = (char *)malloc(sizeof(char)*SIZE);
-        donorList[i]->bloodType = (char *)malloc(sizeof(char)*SIZE);
+        donorList[i] = (Donor *)malloc(sizeof(Donor));
+        donorList[i]->organ = (char *)malloc(sizeof(char)*(SIZE+1));
+        donorList[i]->bloodType = (char *)malloc(sizeof(char)*(SIZE+1));
         fscanf(infile,"%s %s",donorList[i]->organ,donorList[i]->bloodType);
-        printf("\nOrgan: %s BloodType: %s",donorList[i]->organ,donorList[i]->bloodType);
+        printf("\nOrgan: %s \nBloodType: %s\n",donorList[i]->organ,donorList[i]->bloodType);
         i++ ;
     }
-    donorList[i] = NULL;
+    donorList[numLines] = NULL;
     return donorList;
 }
-void findMatch(Donor ** donorList,organT ** patient ,FILE * outfile){
-    int i = 0 ;
-    int j = 0 ;
-   while ( patient[i] != NULL ){
-       while (patient[i]->organname != donorList[j]->organ && patient[i]->bloodtype != donorList[j]->bloodType ){
-           if (donorList[j+1] == NULL){
-              fprintf(outfile,"%s has no match\n",patient[i]->name);
-              j++ ;
-              break ;
-           }
-           j++ ;
-       }
-       if (patient[j] != NULL){
-          fprintf(outfile,"%s has match\n with %s %s\n",patient[i]->name, donorList[j]->organ,donorList[j]->bloodType);
-       }
-       j = 0 ;
-       i++ ;
-   }
-}
-int main(){
-	FILE * infile = fopen("organ.in","r");
-	organT ** patient = readPatients(infile);
-    Donor ** donorList = readDonorList(infile);
-	FILE * outfile= fopen("organ.in","w+");
-    findMatch(donorList,patient,outfile);
-}
-
-
