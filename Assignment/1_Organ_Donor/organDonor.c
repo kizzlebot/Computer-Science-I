@@ -107,6 +107,8 @@ int main(){
 	FILE * outfile= fopen("organ.out","w");
 
     findPair(outfile,donorList,patient);
+    free(donorList);
+    free(patient);
 }
 
 ////////////////////////////////////////////////////////////////////
