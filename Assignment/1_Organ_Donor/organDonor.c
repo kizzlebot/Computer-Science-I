@@ -65,21 +65,21 @@ organT ** allocate(int numLines);
 // Return:   void
 // Description: Debug purpose
 ///////////////////////////////////////////////////////////////////
-void printPatient(organT * patient);
+void printPatient(organT ** patient);
 ///////////////////////////////////////////////////////////////////
 // Function: readPatients
 // Argument: infile (A file pointer instance)
 // Return:   organT ** containing a populated patient list
 // Description: Reads in infile, allocates and returns a populate list
 ///////////////////////////////////////////////////////////////////
-organT ** readPatients(FILE * infile);
+organT ** readPatients();
 ///////////////////////////////////////////////////////////////////
 // Function:  readDonorList
 // Argument:  infile
 // Return:    Donor ** which is an array of organ/bloodtype data struct
 // Description: Reads infile, allocates and populates Donor **
 ///////////////////////////////////////////////////////////////////
-Donor ** readDonorList(FILE * infile);
+Donor ** readDonorList();
 ///////////////////////////////////////////////////////////////////
 // Function: findPair,
 // Argument: outfile, donorList, patient
@@ -88,7 +88,7 @@ Donor ** readDonorList(FILE * infile);
 //               For every organ donated, will match with patient on waiting
 //               list.
 ///////////////////////////////////////////////////////////////////
-void findPair(FILE * outfile, Donor ** donorList , organT ** patient);
+void findPair( Donor ** donorList , organT ** patient);
 ///////////////////////////////////////////////////////////////////
 // Function:  orgPatientByOrgan
 // Argument:  patient
@@ -101,12 +101,12 @@ void findPair(FILE * outfile, Donor ** donorList , organT ** patient);
 void orgPatientByOrgan(organT ** patient);
 
 int main(){
-	FILE * infile = fopen("organ.in","r");
-	organT ** patient = readPatients(infile);
-    Donor ** donorList = readDonorList(infile);
-	FILE * outfile= fopen("organ.out","w");
+	organT ** patient = readPatients();
+    Donor ** donorList = readDonorList();
 
-    findPair(outfile,donorList,patient);
+    orgPatientByOrgan(patient);
+    printPatient(patient);
+    findPair(donorList,patient);
     free(donorList);
     free(patient);
 }
@@ -178,24 +178,24 @@ void orgPatientByOrgan(organT ** patient){
 
     }
 }
-void findPair(FILE * outfile, Donor ** donorList , organT ** patient){
+void findPair(Donor ** donorList , organT ** patient){
     int i = 0 ;
     int j = 0 ;
     int compareLimit = 100 ;
     int result = 0 ;
-    orgPatientByOrgan(patient);
     while ( donorList[i] != NULL ){
         while ( patient[j] != NULL ){
             if ( strncmp( donorList[i]->organ,patient[j]->organname,compareLimit)==0 && strncmp( donorList[i]->bloodType ,patient[j]->bloodtype,compareLimit)==0 && patient[j]->received != 1 ){
                 patient[j]->received = 1 ;
-                fprintf(outfile,"%s %s\n",patient[j]->name,donorList[i]->organ);
+                printf("%s %s\n",patient[j]->name,donorList[i]->organ);
                 j = 0 ;
                 break ;
             }
             j++ ;
         }
         if ( patient[j] == NULL ){
-            fprintf(outfile,"No match found\n");
+            //fprintf(outfile,"No match found\n");
+            printf("%s","No Match Found\n");
             j = 0 ;
         }
         i++ ;
@@ -219,18 +219,21 @@ organT ** allocate(int numLines){
 	patient[i] = NULL ;
 	return patient ;
 }
-void printPatient(organT * patient){
-	if ( patient != NULL ){
-		printf("\nName: %s\n",patient->name);
-		printf("Organ: %s\n",patient->organname);
-		printf("BloodType: %s\n",patient->bloodtype);
-		printf("Added: %d/%d/%d\n",patient->dateAdded.month,patient->dateAdded.day,patient->dateAdded.year);
+void printPatient(organT ** patient){
+    int i = 0 ;
+	while ( patient[i] != NULL ){
+		//printf("\nName: %s\n",patient[i]->name);
+		//printf("Organ: %s\n",patient[i]->organname);
+		//printf("BloodType: %s\n",patient[i]->bloodtype);
+		//printf("Added: %d/%d/%d\n",patient[i]->dateAdded.month,patient[i]->dateAdded.day,patient[i]->dateAdded.year);
+        i++ ;
 	}
 }
-organT ** readPatients(FILE * infile){
+organT ** readPatients(){
 	int numLines ;
 	// Get the first line
-	fscanf(infile,"%d",&numLines);
+	//fscanf(infile,"%d",&numLines);
+    scanf("%d",&numLines);
 	// Allocate a pointer of pointers and all the points contained within lol
 	organT ** patient = allocate(numLines);
 
@@ -242,30 +245,29 @@ organT ** readPatients(FILE * infile){
 		// Scan that shit
         dateT dateAdded  ;
         timeT timeAdded  ;
-		fscanf(infile,"%s %s %s %d%c%d%c%d %d%c%d",(patient[i]->name),(patient[i]->organname),(patient[i]->bloodtype),
+		scanf("%s %s %s %d%c%d%c%d %d%c%d",(patient[i]->name),(patient[i]->organname),(patient[i]->bloodtype),
                                                    //  Month            /        Day            /      year
                                                    (&dateAdded.month),(&ch),(&dateAdded.day),(&ch),(&dateAdded.year),
                                                    //    Hour           :      Minute
                                                    (&timeAdded.hour),(&ch),(&timeAdded.minute));
         patient[i]->dateAdded = dateAdded ;
         patient[i]->timeAdded= timeAdded;
-		printPatient(patient[i]);
 		i++ ;
 	}
 
 	return patient ;
 }
-Donor ** readDonorList(FILE * infile){
+Donor ** readDonorList(){
     int numLines =0;
     int i = 0 ;
-    fscanf(infile,"%d",&numLines);
+    scanf("%d",&numLines);
     Donor ** donorList = (Donor **)malloc(sizeof(Donor*)*(numLines+1));
     while (i < numLines){
         donorList[i] = (Donor *)malloc(sizeof(Donor));
         donorList[i]->organ = (char *)malloc(sizeof(char)*(SIZE+1));
         donorList[i]->bloodType = (char *)malloc(sizeof(char)*(SIZE+1));
-        fscanf(infile,"%s %s",donorList[i]->organ,donorList[i]->bloodType);
-        printf("\nOrgan: %s \nBloodType: %s\n",donorList[i]->organ,donorList[i]->bloodType);
+        scanf("%s %s",donorList[i]->organ,donorList[i]->bloodType);
+        //printf("\nOrgan: %s \nBloodType: %s\n",donorList[i]->organ,donorList[i]->bloodType);
         i++ ;
     }
     donorList[numLines] = NULL;
