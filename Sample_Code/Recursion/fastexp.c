@@ -17,13 +17,13 @@ int fastmodexp(int base, int exp, int mod);
 int main() {
 
     int start = time(0);
-    printf("ans slow = %d\n",   mymodexp(BASE, 1000000007, P));
+    //printf("ans slow = %d\n",   mymodexp(BASE, 1000000007, P));
     int end1 = time(0);
     printf("ans fast = %d\n", fastmodexp(BASE, 1000000007, P));
     int end2 = time(0);
     printf("first call took %d\n", end1-start);
     printf("sec call took %d\n", end2 - end1);
-    return 0;
+    //return 0;
 
 }
 
