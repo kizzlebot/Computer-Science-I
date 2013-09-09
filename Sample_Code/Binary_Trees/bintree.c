@@ -2,7 +2,7 @@
 // 3/25/04, with code added to do delete on 3/30/04
 // COP 3502 Lecture: Some Binary Tree Functions
 #include <stdio.h>
-
+#include <stdlib.h>
 struct tree_node {
   int data;
   struct tree_node *left;
@@ -11,7 +11,7 @@ struct tree_node {
 
 struct tree_node *create_node(int val);
 void inorder(struct tree_node *current_ptr);
-struct tree_node* insert(struct tree_node *root, 
+struct tree_node* insert(struct tree_node *root,
                          struct tree_node *element);
 int add(struct tree_node *current_ptr);
 
@@ -37,7 +37,7 @@ int main() {
   while (ans<6) {
 
     if (ans == 1) {
-   
+
       // Get value to insert.
       printf("What value would you like to insert?");
       scanf("%d", &val);
@@ -63,7 +63,7 @@ int main() {
       if (find(my_root, val))
         printf(" Found %d in the tree.\n", val);
       else
-        printf(" Did not find %d in the tree.\n", val); 
+        printf(" Did not find %d in the tree.\n", val);
     }
 
     if (ans == 4)
@@ -92,11 +92,11 @@ void inorder(struct tree_node *current_ptr) {
   }
 }
 
-struct tree_node* insert(struct tree_node *root, 
+struct tree_node* insert(struct tree_node *root,
                          struct tree_node *element) {
 
   // Inserting into an empty tree.
-  if (root == NULL) 
+  if (root == NULL)
     return element;
   else {
 
@@ -122,7 +122,7 @@ struct tree_node* insert(struct tree_node *root,
       // Place the node directly to the left of root.
       else
         root->left = element;
-    } 
+    }
 
     // Return the root pointer of the updated tree.
     return root;
@@ -151,13 +151,13 @@ int find(struct tree_node *current_ptr, int val) {
       return 1;
 
     // Search to the left.
-    if (val < current_ptr->data) 
+    if (val < current_ptr->data)
       return find(current_ptr->left, val);
-    
+
     // Or...search to the right.
-    else 
+    else
       return find(current_ptr->right, val);
-    
+
   }
   else
     return 0;
@@ -252,13 +252,13 @@ struct tree_node* findNode(struct tree_node *current_ptr, int value) {
       return current_ptr;
 
     // Search to the left.
-    if (value < current_ptr->data) 
+    if (value < current_ptr->data)
       return findNode(current_ptr->left, value);
-    
+
     // Or...search to the right.
-    else 
+    else
       return findNode(current_ptr->right, value);
-    
+
   }
   else
     return NULL; // No node found.
@@ -276,12 +276,12 @@ struct tree_node* delete(struct tree_node* root, int value) {
   delnode = findNode(root, value); // Get a pointer to the node to delete.
 
   par = parent(root, delnode); // Get the parent of this node.
-  
+
   // Take care of the case where the node to delete is a leaf node.
   if (isLeaf(delnode)) {
 
     // Deleting the only node in the tree.
-    if (par == NULL) { 
+    if (par == NULL) {
       free(root); // free the memory for the node.
       return NULL;
     }
@@ -295,16 +295,16 @@ struct tree_node* delete(struct tree_node* root, int value) {
     // Deletes the node if it's a right child.
     else {
       free(par->right); // Free the memory for the node.
-      par->right = NULL;    
+      par->right = NULL;
     }
 
     return root; // Return the root of the new tree.
   }
 
-  // Take care of the case where the node to be deleted only has a left 
+  // Take care of the case where the node to be deleted only has a left
   // child.
   if (hasOnlyLeftChild(delnode)) {
-  
+
     // Deleting the root node of the tree.
     if (par == NULL) {
       save_node = delnode->left;
@@ -331,7 +331,7 @@ struct tree_node* delete(struct tree_node* root, int value) {
 
   // Takes care of the case where the deleted node only has a right child.
   if (hasOnlyRightChild(delnode)) {
-  
+
     // Node to delete is the root node.
     if (par == NULL) {
       save_node = delnode->right;
@@ -354,15 +354,15 @@ struct tree_node* delete(struct tree_node* root, int value) {
     }
     return root;
   }
- 
+
   // Find the new physical node to delete.
-  new_del_node = minVal(delnode->right); 
+  new_del_node = minVal(delnode->right);
   save_val = new_del_node->data;
 
   delete(root, save_val);  // Now, delete the proper value.
 
   // Restore the data to the original node to be deleted.
-  delnode->data = save_val; 
+  delnode->data = save_val;
 
   return root;
 }
@@ -380,4 +380,4 @@ int menu() {
   printf("6. Quit.\n");
   scanf("%d", &ans);
   return ans;
-}  
+}
