@@ -103,6 +103,51 @@ char * dynAlloc(int size){
     printf("%c",a[size-1]);
 }
 
+int sumOfDigits(int n){
+  if ( n>10){
+    return sumOfDigits(n/10) + n%10 ;
+  }
+}
+double average(double array[], int length){
+
+    if(length == 1)
+    return array[length-1];
+    return (length-1.0)/length*average(array, length - 1) + array[length-1]/length;
+
+}
+void DNAmalloc(){
+
+    FILE *ifp = fopen("input.txt", "r");
+    char newLine;
+    int i;
+    struct DNAstrand my_dna;
+
+    fscanf(ifp, "%d%c", &my_dna.length, &newLine);
+
+    my_dna.sequence = malloc(my_dna.length*sizeof(char));
+
+    for(i=0;i<my_dna.length;i++)
+    fscanf(ifp, "%c", &my_dna.sequence[i]);
+
+    my_dna.sequence = realloc(my_dna.sequence, my_dna.length/2*sizeof(char));
+    my_dna.sequence = realloc(my_dna.sequence, my_dna.length*2*sizeof(char));
+
+    free(my_dna.sequence);
+
+}
+int substring(struct DNAstrand *strand, char snip[]){
+    int i, j, flag = 0;
+    int subLength = strlen(snip);
+    for(i=0;i<strand->length - subLength;i++){
+    j = 0;
+    while(j<subLength && strand->sequence[i] == snip[j]){
+    j++;
+    }
+    if(j==subLength)
+    flag = 1;
+    }
+    return flag;
+}
 int lucas(int n){
     if (n == 1)
         return 1;
@@ -110,8 +155,19 @@ int lucas(int n){
         return 3;
     return lucas(n-1) + lucas(n-2);
 }
-
-int main(){
-    printf("Lucas: %d\n",lucas(8))
-
+int isPal(char word[], int start, int end){
+    if(start >= end) return 1;
+    if(word[start]!=word[end]) return 0;
+    return isPal(word, start+1, end-1);
 }
+void beerPoem(int n){
+    printf("%d bottles of beer, drink 1 down, %d bottles are near\n", n, n-1);
+    if(n==1) return;
+    beerPoem(n-1);
+}
+int computeA(int n){
+    if(n == 1) return 2;
+    if(n == 2) return 5;
+    return 5*computeA(n-1) - 6*computeA(n-2);
+}
+
