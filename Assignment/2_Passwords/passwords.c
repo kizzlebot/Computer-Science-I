@@ -3,21 +3,22 @@
 #include <string.h>
 #define GUESS 10000
 
-/*
- * Takes an array of words, and returns the value of
- * strlen(words[i-1])*strlen(words[i-2])*strlen....
- */
+/*  Returns the number of moves required to move from current element to next */
 int getCombosPerMove(char ** words  ){
     if ( *words == NULL ) return 1 ;
     return strlen(*(words)) * getCombosPerMove(words+1);
 }
+
+/* Finds and prints the nth combination specified by what the magic number is */
 void findCombo(char ** words , int magic  ){
     if ( *words == NULL ) return ;
     int combosPerMove = getCombosPerMove(words+1);
     printf("%c",*(*(words)+magic/combosPerMove));
     findCombo(words+1,magic%combosPerMove);
 }
-char ** read(char ** sets , int numSets){
+
+/* Recursively read and allocate the unallocated char * in **sets and return  */
+char ** recursiveRead(char ** sets , int numSets){
     if (numSets == 0 ) return sets ;
 
     char * aLine ;
@@ -28,36 +29,41 @@ char ** read(char ** sets , int numSets){
     strcpy(*sets,aLine);
     free(aLine);
 
-    read(sets+1,numSets-1);
+    recursiveRead(sets+1,numSets-1);
     return sets ;
 }
+/* Free char * in char ** sets, recursively */
 void recursiveFree(char ** sets  ){
     if (*sets == NULL ) return ;
 
     recursiveFree(sets+1);
     free(*sets);
 }
+/* Recursively call findCombo until we have no more passes to guess*/
 void recursiveInit(char ** input , int numPassesToGuess){
     if ( numPassesToGuess == 0 ) return ;
 
     int numSets ;
     int magicNumber ;
     scanf("%d",&numSets);
-    input = read( (char **) calloc(numSets+1,sizeof(char *)),numSets);
+    input = recursiveRead( (char **) calloc(numSets+1,sizeof(char *)),numSets);
     scanf("%d",&magicNumber);
 
-    findCombo(input,magicNumber-1);
+    findCombo(input,magicNumber-1); // This is that Ancient Chinese secret homie
 
     printf("\n");
     recursiveFree(input);
+    free(input);
+
     recursiveInit(input,numPassesToGuess-1);
 }
 
 
 int main(){
     int numPassesToGuess;
-    // Get the first line containg number of passwords to guess
+    char ** input ; // Don't need to init, let resursiveInit do that
+
+    // Get the first line containing number of passwords to guess
     scanf("%d",&numPassesToGuess);
-    char ** input ;
     recursiveInit(input,numPassesToGuess);
 }
