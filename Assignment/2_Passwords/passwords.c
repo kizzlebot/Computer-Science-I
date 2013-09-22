@@ -23,7 +23,7 @@ int getCombosPossible(char ** words  );
 
 /* Function    : findCombo
  * Arguments   : (char **) Contains sets of words, (an array of an array of
- *						   chars)
+ *                           chars)
  *               (int)     The magic number (nth value)
  *               (int)     Initially contains product b/t all lengths of sets
  * Returns     : void
@@ -76,14 +76,14 @@ int main(){
     // Get the first line containing number of passwords to guess
     int numPassesToGuess;
     scanf("%d",&numPassesToGuess);
-	// Declare a char **, (only declare), and pass to recursiveInit
-	char ** input ; 
+    // Declare a char **, (only declare), and pass to recursiveInit
+    char ** input ; 
     recursiveInit(input,numPassesToGuess); 
     return 0 ; // Okay, we outta herr
 }
 
 /* How many moves to move from |----to--->  here?
- *  _					                       _ 
+ *  _                                           _ 
  * [a][b][c][d]                            [a][b][c][d]
  * [a][d][f]                               [a][d][f]
  * [x][x][d]                               [x][x][d]
@@ -93,77 +93,77 @@ int main(){
  * on the first set by this equation, 10 / 9 = 1. The mod between these two is the magic number for
  * the next iteration in the recursion */ 
 int getCombosPossible(char ** words  ){
-	// Base Case
+    // Base Case
     if ( *words == NULL ) return 1 ; 
     return strlen(*(words)) * getCombosPossible(words+1); // Return Product strlen and prev strlen
 }
 void findCombo(char ** words , int magic, int combosPerMove){
-	// Base Case
+    // Base Case
     if ( *words == NULL ) { 
-		printf("\n");
-		return ; 
-	}
-	// Compute the number of moves that need to be made to in the following sets
-	// If a 3x3x3 (three sets with three chars each), number of moves req to move 
-	// an index in the current set is given by (3x3x3)/strlen(currentSet)
-	// The magicNumber/num_move_req_in_following_sets = index this set
+        printf("\n");
+        return ; 
+    }
+    // Compute the number of moves that need to be made to in the following sets
+    // If a 3x3x3 (three sets with three chars each), number of moves req to move 
+    // an index in the current set is given by (3x3x3)/strlen(currentSet)
+    // The magicNumber/num_move_req_in_following_sets = index this set
     combosPerMove = combosPerMove / strlen(*words);
     printf("%c",*(*(words)+magic/combosPerMove));
 
-	// Recursive call
+    // Recursive call
     findCombo(words+1,magic%combosPerMove,combosPerMove);
 }
 
 
 char ** recursiveRead(char ** sets , int numSets){
-	// Base case 
+    // Base case 
     if (numSets == 0 ) return sets ; 
 
-	// Allocate a dummy with a guessed size 
+    // Allocate a dummy with a guessed size 
     char * aLine = (char *) calloc(GUESS,sizeof(char));
-	// Read the line into it
+    // Read the line into it
     scanf("%s",aLine );
-	// Use the length of the line read in and allocate a set of chars with that many elements
+    // Use the length of the line read in and allocate a set of chars with that many elements
     *sets = (char *)calloc(strlen(aLine)+1,sizeof(char )) ;
-	// Copy the line read into the allocated 
+    // Copy the line read into the allocated 
     strcpy(*sets,aLine);
-	// Free the dummy 
+    // Free the dummy 
     free(aLine);
 
-	// Recursive call with the next index of sets and numSets-1
+    // Recursive call with the next index of sets and numSets-1
     recursiveRead(sets+1,numSets-1);
 
-	// Last one off the stack
+    // Last one off the stack
     return sets ;
 }
 void recursiveFree(char ** sets  ){
-	// Base case
+    // Base case
     if (*sets == NULL ) return ;
-	
-	// Recursive call first.. First element is last one freed
+    
+    // Recursive call first.. First element is last one freed
     recursiveFree(sets+1);
-	// Free the char array
+    // Free the char array
     free(*sets);
 }
 void recursiveInit(char ** input , int numPassesToGuess){
-	// Base case
+    // Base case
     if ( numPassesToGuess == 0 ) return ;
-	
-	// Read in line containing number of set of sets of chars. numSets_and_magic used for both number of sets and magic number
+    
+    // Read in line containing number of set of sets of chars. numSets_and_magic used for both number of sets and magic number
     int numSets_and_magic ;
     scanf("%d",&numSets_and_magic);
-	// Read in the next numSets number of lines
+    // Read in the next numSets number of lines
     input = recursiveRead( (char **) calloc(numSets_and_magic+1,sizeof(char *)),numSets_and_magic);
-	// Read magic_number
+    // Read magic_number
     scanf("%d",&numSets_and_magic);
-	// Find the combo
+    // Find the combo
     findCombo(input,numSets_and_magic-1,getCombosPossible(input)); // << This is that Ancient Chinese secret homie
 
-	// Free the allocated elements
+    // Free the allocated elements
     recursiveFree(input);
-	// Free the allocated set itself
+    // Free the allocated set itself
     free(input);
 
-	// Recursive call
+    // Recursive call
     recursiveInit(input,numPassesToGuess-1);
 }
