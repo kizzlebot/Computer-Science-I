@@ -8,7 +8,7 @@ a.out.dSYM
 .Trashes
 ehthumbs.db
 Thumbs.db
-
+a.out.dSYM
 # Object files
 *.o
 *.ko
