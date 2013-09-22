@@ -1,12 +1,12 @@
+/* Name:    James Choi
+ * Course:  COP 3501 (Mon/Wed/Fri 9:30AM)
+ * Assignment #2
+ * September 22, 2013 */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #define GUESS 10000
 
-/* Name:    James Choi
- * Course:  COP 3501 (Mon/Wed/Fri 9:30AM)
- * Assignment #2
- * September 22, 2013 */
 
 /* Function    : getCombosPossible
  * Arguments   : (char **) Containing the sets of chars that follow the one in
