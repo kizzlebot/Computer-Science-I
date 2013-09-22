@@ -3,6 +3,9 @@
 #include <string.h>
 #define GUESS 10000
 
+/* Keep cursing. Keep recursing
+ */
+
 /*  Returns the number of moves required to move from current element to next */
 int getCombosPerMove(char ** words  ){
     if ( *words == NULL ) return 1 ;
@@ -12,6 +15,7 @@ int getCombosPerMove(char ** words  ){
 /* Finds and prints the nth combination specified by what the magic number is */
 void findCombo(char ** words , int magic  ){
     if ( *words == NULL ) return ;
+
     int combosPerMove = getCombosPerMove(words+1);
     printf("%c",*(*(words)+magic/combosPerMove));
     findCombo(words+1,magic%combosPerMove);
