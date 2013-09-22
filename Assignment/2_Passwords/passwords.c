@@ -65,7 +65,7 @@ void recursiveFree(char ** sets  );
  *              findCombo to find the nth (magicNumber) combination, before
  *              freeing allocated values and then calling itself with
  *              numPassesToGuess-1 until a zero is reached  */
-void recursiveInit(char ** input , int numPassesToGuess);
+void recursiveInit(char ** sets, int numPassesToGuess);
 
 
 
@@ -146,7 +146,7 @@ void recursiveFree(char ** sets  ){
     // Free the char array
     free(*sets);
 }
-void recursiveInit(char ** input , int numPassesToGuess){
+void recursiveInit(char ** sets, int numPassesToGuess){
     // Base case
     if ( numPassesToGuess == 0 ) return ;
     
@@ -154,17 +154,17 @@ void recursiveInit(char ** input , int numPassesToGuess){
     int numSets_and_magic ;
     scanf("%d",&numSets_and_magic);
     // Read in the next numSets number of lines
-    input = recursiveRead( (char **) calloc(numSets_and_magic+1,sizeof(char *)),numSets_and_magic);
+    sets = recursiveRead( (char **) calloc(numSets_and_magic+1,sizeof(char *)),numSets_and_magic);
     // Read magic_number
     scanf("%d",&numSets_and_magic);
     // Find the combo
-    findCombo(input,numSets_and_magic-1,getCombosPossible(input)); // << This is that Ancient Chinese secret homie
+    findCombo(sets ,numSets_and_magic-1 ,getCombosPossible(sets) ); // << This is that Ancient Chinese secret homie
 
     // Free the allocated elements
-    recursiveFree(input);
-    // Free the allocated set itself
-    free(input);
+    recursiveFree(sets);
+    // Free the allocated (set) itself
+    free(sets);
 
     // Recursive call
-    recursiveInit(input,numPassesToGuess-1);
+    recursiveInit(sets ,numPassesToGuess-1);
 }
