@@ -100,7 +100,7 @@ int getCombosPossible(char ** words  ){
 }
 void findCombo(char ** words , int magic, int combosPerMove){
     // Base Case
-    if ( *words == NULL ) { 
+	if ( *words == NULL  ) { 
         printf("\n");
         return ; 
     }
