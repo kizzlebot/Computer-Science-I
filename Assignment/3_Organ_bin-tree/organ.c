@@ -58,14 +58,27 @@ void printPatient(organT * patientList){
 	if ( patientList == NULL ){
 		return ;
 	}
+	printPatient(patientList+1);
+
 	printf("name %s\n",(patientList)->name);
 	printf("organ:%s\n",(patientList)->organname);
 	printf("bloodtype:%s\n",(patientList)->bloodtype);
 	printf("DateAdded:%d/%d/%d\n",(patientList)->dateAdded.month,(patientList)->dateAdded.day,(patientList)->dateAdded.year);
 	printf("TimeAdded:%d:%d\n\n",(patientList)->timeAdded.hour,(patientList)->timeAdded.minute);
-	printPatient(patientList+1);
 }
 
+void printNode(struct Node * node){
+	if ( node == NULL ){
+		return ;
+	}
+	printf("name %s\n",(node)->patient.name);
+	printf("organ:%s\n",(node)->patient.organname);
+	printf("bloodtype:%s\n",(node)->patient.bloodtype);
+	printf("DateAdded:%d/%d/%d\n",(node)->patient.dateAdded.month,(node)->patient.dateAdded.day,(node)->patient.dateAdded.year);
+	printf("TimeAdded:%d:%d\n\n",(node)->patient.timeAdded.hour,(node)->patient.timeAdded.minute);
+	printNode(node->left);
+    printNode(node->right);
+}
 void read(int count ,organT * patientList ){
 	if (count == 0 ){
 		return ;
@@ -131,7 +144,6 @@ struct Node * insertPatient(struct Node * root, struct Node * element ){
                 }
             }
             else{
-                printf("day equal or less than \n");
                 if (root->left != NULL ){
                     root->left = insertPatient(root->left,element);
                 }
@@ -150,7 +162,6 @@ struct Node * insertPatient(struct Node * root, struct Node * element ){
         }
     }
     else{
-    printf("year less than ");
         if (root->left != NULL ){
             root->left = insertPatient(root->left,element);
         }
@@ -159,15 +170,16 @@ struct Node * insertPatient(struct Node * root, struct Node * element ){
         }
     }
     return root;
-
 }
 int main(){
 	int numPatients ;
 	//scanf("%d",&numPatients);
     struct Node * aNode = NULL;
-    aNode = createNode("James","Choi","A",2,24,1990);
+    aNode = createNode("Jms","Ci","A",6,24,1990);
+    aNode = insertPatient(aNode,createNode("jes","Cboi","B",2,24,1970));
+    aNode = insertPatient(aNode,createNode("es","Coi","B",2,24,1960));
     aNode = insertPatient(aNode,createNode("JOhnny","Kidney","A",2,25,1990));
-    printf("%s ",aNode->right->patient.name);
+    printNode(aNode);
     //printf("%s ",aNode->left->patient.organname);
     //printf("%s ",aNode->left->patient.bloodtype);
     return 0 ;
