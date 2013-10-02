@@ -41,7 +41,7 @@ int main() {
 }
 
 // Pre-condition: A is an array of size greater than or equal to size and
-//                maxval is positive.
+://                maxval is positive.
 // Post-condition: A is filled with random integers in the range [1,maxval] 
 //                 from index 0 to index size-1.
 void randArray(int A[], int size, int maxval) {
