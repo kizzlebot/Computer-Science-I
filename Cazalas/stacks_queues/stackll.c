@@ -16,7 +16,7 @@ int top(struct stack *front);
 void init(struct stack **front);
 
 int main() {
-   
+
   struct stack *stack1, *temp;
   int tempval;
 
@@ -28,7 +28,7 @@ int main() {
     printf("Push failed.\n");
 
   temp = pop(&stack1);
-  if (temp !=NULL)  
+  if (temp !=NULL)
     printf("Pop stack = %d\n", temp->data);
 
   if (empty(stack1))
@@ -56,7 +56,7 @@ void init(struct stack **front) {
 
 // Pre-condition: front points to the top of the stack.
 // Post-condition: a new node storing num will be pushed on top of the
-//                 stack if memory is available. In this case a 1 is 
+//                 stack if memory is available. In this case a 1 is
 //                 returned. If no memory is found, no push is executed
 //                 and a 0 is returned.
 
@@ -65,7 +65,7 @@ int push(struct stack **front, int num) {
   struct stack *temp;
   // Create temp node and link it to front.
   temp = (struct stack *)malloc(sizeof(struct stack));
-  
+
   if (temp != NULL) {
     temp->data = num;
     temp->next = *front;
@@ -83,15 +83,15 @@ int push(struct stack **front, int num) {
 
 struct stack* pop(struct stack **front) {
 
-  struct stack *temp;    
+  struct stack *temp;
   temp = NULL;
 
-  if (*front != NULL) {  
+  if (*front != NULL) {
     temp = (*front);
     *front = (*front)->next;
     temp -> next = NULL;
   }
-  return temp;  
+  return temp;
 }
 
 // Pre-condition: front points to the top of a stack

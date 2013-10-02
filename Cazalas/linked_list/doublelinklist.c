@@ -21,13 +21,13 @@ struct dll* insert_back(struct dll *front, int num);
 int main() {
 
   struct dll *randlist=NULL;
-  
+
   // Test out some functions on randlist.
   randlist = insert_front(randlist,5);
   print(randlist);
   randlist = insert_back(randlist,2);
   print(randlist);
-  
+
   randlist = insert_front(randlist, 1);
   print(randlist);
   randlist = insert_front(randlist, 6);
@@ -35,7 +35,7 @@ int main() {
   randlist = insert_front(randlist, 8);
   randlist = insert_back(randlist, 7);
   print(randlist);
-  
+
   system("PAUSE");
   return 0;
 }
@@ -63,10 +63,10 @@ struct dll* insert_front(struct dll *front, int num) {
   temp = (struct dll*)malloc(sizeof(struct dll));
   temp->data = num;
   temp->next = front;
-  
+
   // Nothing comes before this node.
   temp->prev = NULL;
-  
+
   // If front exists, we have to link its previous link to temp.
   if (front != NULL)
     front->prev = temp;
@@ -79,39 +79,39 @@ struct dll* insert_front(struct dll *front, int num) {
 // Post-condition: a new node containing num will be created and added
 //                 to the end of the linked listed pointed to by front.
 struct dll* insert_back(struct dll *front, int num) {
-       
+
   struct dll *temp, *iter;
 
   // Create temp node and store the value.
   temp = (struct dll*)malloc(sizeof(struct dll));
   temp->data = num;
   temp->next = NULL;
-  
+
   // We are adding to an empty list.
   if (front == NULL) {
-  
+
      // In a doubly linked list, this means the previous pointer is to NULL.
      temp->prev = NULL;
-     
+
      // Return the new front of the list.
      return temp;
   }
-  
+
   // Here we add to an existing list.
   else {
-     
+
      // Iterate to the last element in the old list.
      iter = front;
      while (iter->next != NULL)
        iter = iter->next;
-       
-     // Now, this needs to relink to our new first element, temp. 
+
+     // Now, this needs to relink to our new first element, temp.
      iter->next = temp;
      temp->prev = iter;
-     
+
      // This STAYS as the front of our list!
      return front;
   }
-       
+
 }
 

@@ -210,7 +210,6 @@ struct tree_node* parent(struct tree_node *root, struct tree_node *node) {
 // Returns a pointer to the node storing the minimum value in the tree
 // with the root, root. Will not work if called with an empty tree.
 struct tree_node* minVal(struct tree_node *root) {
-
   // Root stores the minimal value.
   if (root->left == NULL)
     return root;
@@ -236,7 +235,6 @@ struct tree_node* maxVal(struct tree_node *root) {
 
 // Returns 1 if node is a leaf node, 0 otherwise.
 int isLeaf(struct tree_node *node) {
-
   return (node->left == NULL && node->right == NULL);
 }
 
