@@ -9,6 +9,8 @@ a.out.dSYM
 ehthumbs.db
 Thumbs.db
 a.out.dSYM
+a.out.js
+a.out.js.map
 # Object files
 *.o
 *.ko
@@ -29,3 +31,8 @@ a.out.dSYM
 *.app
 
 
+Computer-Science-I.config
+Computer-Science-I.creator
+Computer-Science-I.creator.user
+Computer-Science-I.files
+Computer-Science-I.includes
