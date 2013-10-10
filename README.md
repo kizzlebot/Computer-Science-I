@@ -65,42 +65,8 @@ c. Explanation of Grading Policy
 d. Binary Search Algorithm
 =================================
     [2][7][12][13][48][34][18][23][123]
-     ^          ^                   ^
-    Low        Mid                 High
-
-
-    Prototype
-    ========================
-        int binSearch( int * array, int low, int high, int val);
-
-    Pseudocode
-    ========================
-        int binSearch( int * array, int low, int high, int val){
-            if ( low > high ){
-                return 0 ;
-            }
-
-            int mid = (low+high)/2 ;
-
-            if ( val > array[mid] ) {
-                return binSearch( array, mid+1, high, val)
-            }else if (val < array[mid]){
-                return binSearch(array,low,mid-1,val);
-            }else{
-                return 1 ;
-            }
-
-        }
-
-e. Calloc, Realloc
-=================================
-    1. Calloc
-    ========================
-        // Calloc zeros out everything before handing the pointer over
-        void * calloc( 100000, sizeof(int));
-        void * calloc( numOfIndexes , sizeOfEachIndex);
-
-    2. Realloc
-    ========================
-
+    
+    
+> Links
+http://kizzlebot.github.io/Computer-Science-I
 
