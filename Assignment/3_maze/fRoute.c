@@ -2,14 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include "maze.h"
-#define GUESS 300
 char ** recursiveRead(char ** sets , int ** nBoard, int numSets,int cols){
     // Base case
     if (numSets == 0 ) return sets ;
 
-    // Allocate a dummy with a guessed size
-    // Read the line into it
-    // Use the length of the line read in and allocate a set of chars with that many elements
     *sets = (char *)calloc(cols+1,sizeof(char )) ;
     *nBoard = (int *)calloc(cols+1,sizeof(int )) ;
     scanf("%s",*sets);
@@ -17,7 +13,7 @@ char ** recursiveRead(char ** sets , int ** nBoard, int numSets,int cols){
     int i = 0 ;
     for (i = 0 ; i < strlen(*sets); i++ ){
         if (*(*(sets)+i)=='S' ){
-            *(*nBoard+i)=-0;
+            *(*nBoard+i)=0;
         }
         else{
             *(*nBoard+i)=-1;
@@ -36,6 +32,54 @@ void printCC(char ** sets){
         printCC(sets+1);
     }
 }
+
+void spots(struct stack * queue, char ** board,int ** nBoard){
+    //while queue is not Empty
+    struct stack * dq ;
+    while (queue!= NULL ){
+        // dequeue: pop off the stack current ;
+        dq = pop(&queue);
+
+        // if this is the goal:
+        if (board[dq->coord[0]][dq->coord[1]] == '~' ){
+            // return ;
+            printf("%d \n",nBoard[dq->coord[0]][dq->coord[1]]);
+            return;
+        }
+        // else
+        else{
+            // for each neighbor of current, (there can only be four neighbors a most)
+            // if neighbor is unvisited and not blocked then
+            if ( nBoard[dq->coord[0]][dq->coord[1]+1] == -1 && board[dq->coord[0]][dq->coord[1]+1] != 'X' ){
+                // figure out dist diff from current to neighboar and put that val in that index
+                nBoard[dq->coord[0]][dq->coord[1]+1] = nBoard[dq->coord[0]][dq->coord[1]]+1;
+                // enqueue neighbor
+                queue = push(queue,alloc(dq->coord[0],dq->coord[1]+1));
+            }
+            if ( nBoard[dq->coord[0]][dq->coord[1]-1] == -1 && board[dq->coord[0]][dq->coord[1]-1] != 'X' ){
+                // figure out dist diff from current to neighboar and put that val in that index
+                nBoard[dq->coord[0]][dq->coord[1]-1] = nBoard[dq->coord[0]][dq->coord[1]]+1;
+                // enqueue neighbor
+                queue = push(queue,alloc(dq->coord[0],dq->coord[1]-1));
+            }
+            if ( nBoard[dq->coord[0]+1][dq->coord[1]] == -1 && board[dq->coord[0]+1][dq->coord[1]] != 'X' ){
+                // figure out dist diff from current to neighboar and put that val in that index
+                nBoard[dq->coord[0]+1][dq->coord[1]] = nBoard[dq->coord[0]][dq->coord[1]]+1;
+                // enqueue neighbor
+                queue = push(queue,alloc(dq->coord[0]+1,dq->coord[1]));
+            }
+            if ( nBoard[dq->coord[0]-1][dq->coord[1]] == -1 && board[dq->coord[0]-1][dq->coord[1]] != 'X' ){
+            // mark current as examined
+                // figure out dist diff from current to neighboar and put that val in that index
+                nBoard[dq->coord[0]-1][dq->coord[1]] = nBoard[dq->coord[0]][dq->coord[1]]+1;
+                // enqueue neighbor
+                queue = push(queue,alloc(dq->coord[0]-1,dq->coord[1]));
+            }
+        }
+    }
+    printf("There is no way out of this maze!\n");
+}
+
 int main(){
     int firstLine ;
     scanf("%d",&firstLine);
@@ -50,12 +94,17 @@ int main(){
 
     int i = 0 ;
     int j = 0 ;
+    struct stack * start ;
     for ( i = 0 ; i < rows ; i++){
         for ( j = 0 ; j < cols ; j++){
-            printf("%d ",nBoard[i][j]);
+            if (board[i][j] == 'S'){
+                start = alloc(i,j);
+            }
         }
-        printf("\n");
     }
+    spots(start,board,nBoard) ;
+    free(nBoard);
+    free(board);
 }
 
 

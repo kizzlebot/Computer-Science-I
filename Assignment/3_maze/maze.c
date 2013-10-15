@@ -32,12 +32,31 @@ struct stack * push(struct stack * root, struct stack * newTop){
 		return newTop ;
 	}
 }
+struct stack * pushBottom(struct stack ** root, struct stack * newBottom ){
+    if (root != NULL){
+        if ( (*root)->next == NULL ){
+            (*root)->next = newBottom ;
+        }
+        else{
+            pushBottom(&((*root)->next),newBottom);
+        }
+    }
+    else{
+        (*root) = newBottom;
+    }
+    return *root ;
+}
 
 struct stack * pop(struct stack ** root){
-	struct stack * popped = (*root);
-	(*root)=(*root)->next;
-	popped->next = NULL ;
-	return popped ;
+    if (root!=NULL ){
+        struct stack * popped = (*root);
+        (*root)=(*root)->next;
+        popped->next = NULL ;
+        return popped ;
+    }
+    else{
+        return NULL ;
+    }
 }
 
 struct stack * popBottom(struct stack ** root){

@@ -57,4 +57,5 @@ void printnext(struct stack ** root);
  * Description: Wrapper function, prints the first element and if there is more, then call printnext */
 void print(struct stack ** root);
 
+struct stack * pushBottom(struct stack ** root, struct stack * newBottom );
 #endif
