@@ -1,7 +1,8 @@
-/*
- * Name:          James Choi
- * Course:        COP 3502 Computer-Science I (Mon,Wed,Fri)
- * Assignment #3: Maze.c
+/*  Name:          James Choi
+ *  Date:          October 15, 2013
+ *  Course:        COP 3502 Computer-Science I (Mon,Wed,Fri)
+ *  Assignment #3: Maze.c
+ *  Description:   Finds the way out of a maze using concept of Breadth-first search, stacks and queues
  */
 #include <stdio.h>
 #include <string.h>
@@ -105,10 +106,16 @@ void callCases(int numCases){
             }
         }
     }
-    // Find the shortest distance to get out of maze (if there is one), print -1 if not. Then free all the resources
+    // Find the shortest distance to get out of maze (if there is one), print -1 if not.
     findExit(start,board,nBoard) ;
-    free(nBoard);
+
+    // Free all the resources
+    for ( i = 0 ; i < rows ; i++) {
+        free(board[i]);
+        free(nBoard[i]);
+    }
     free(board);
+    free(nBoard);
     recursiveFree(start);
 
     // Recursive call
