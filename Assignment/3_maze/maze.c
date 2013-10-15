@@ -228,6 +228,7 @@ void findExit(struct stack * queue, char ** board,int ** nBoard){
         }
     }
     // If control reached here, there was no way to get outta here
+    free(dq);
     printf("-1\n");
 }
 
