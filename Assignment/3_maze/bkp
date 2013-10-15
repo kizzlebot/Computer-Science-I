@@ -1,0 +1,34 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "maze.h"
+
+int main(){
+	struct stack * s = alloc(5,3);
+	s = push(push(push(push(push(s,alloc(3,5)),alloc(1,4)),alloc(13,2)),alloc(18,2)),alloc(12,3));
+	print(&s);
+    printf("\n\n");
+
+	struct stack * top ;
+    printf("pop: ");
+	top = pop(&s);
+	print(&top);
+    printf("\n");
+	print(&s);
+    printf("\n\n");
+
+    struct stack * bottom = getBottomPtr(&s);
+
+    printf("getBottomPtr: ");
+	print(&bottom);
+    printf("\n");
+	print(&s);
+    printf("\n\n");
+
+    bottom = popBottom(&s);
+    printf("popBottom: ");
+	print(&bottom);
+    printf("\n");
+	print(&s);
+    printf("\n\n");
+}
