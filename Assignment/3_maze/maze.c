@@ -124,7 +124,7 @@ void callCases(int numCases){
 void recursiveFree(struct stack * freeMe){
     if (freeMe!= NULL){
         if ( freeMe->next == NULL ){
-            free(freeMe->next);
+            free(freeMe);
         }
         else{
             recursiveFree(freeMe->next);
