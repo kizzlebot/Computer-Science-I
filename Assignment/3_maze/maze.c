@@ -199,6 +199,7 @@ void findExit(struct stack * queue, char ** board,int ** nBoard){
         if (board[dq->coord[0]][dq->coord[1]] == '~' ){
             // print the value stored at the coord and get outta here
             printf("%d \n",nBoard[dq->coord[0]][dq->coord[1]]);
+            free(dq);
             return;
         }
         // else
