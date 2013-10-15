@@ -90,8 +90,8 @@ void callCases(int numCases){
     scanf("%d %d",&rows,&cols);
 
     // Read the input file into board
-    char ** board = (char **)malloc(sizeof(char *)*(rows+1));
-    int ** nBoard = (int **)malloc(sizeof(int *)*(rows+1));
+    char ** board = (char **)malloc(sizeof(char *)*(rows));
+    int ** nBoard = (int **)malloc(sizeof(int *)*(rows));
     recursiveRead(board,nBoard,rows,cols);
 
     int i = 0 ;
