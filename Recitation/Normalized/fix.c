@@ -78,7 +78,6 @@ int main(){
         getYourFix(aLine,i);
         i++ ;
     }
-    free(aLine);
 }
 
 int getBool(char ch){
@@ -136,7 +135,7 @@ void getYourFix(char * aLine, int caseNum){
     struct stack * aStack ;
     struct stack * popped ;
     int n = 0 ;
-
+    
     int TorFx =  0 ;
     // Find out how deep is the deepest subexpression in the given line
     int oddOrEven = findDepth(aLine,0);
@@ -163,7 +162,8 @@ void getYourFix(char * aLine, int caseNum){
                     // free(popped); // get rid of T or F
                 }
                 // Free (
-                free(pop(&aStack));
+                // free(pop(&aStack));
+                pop(&aStack);
                 // Everytime a ( is freed, we move up a level
                 n-- ;
                 // replace with T or F
@@ -172,7 +172,7 @@ void getYourFix(char * aLine, int caseNum){
             // Must've been ()
             else{
                 // Free (
-                free(pop(&aStack));
+                pop(&aStack);
                 n--;
             }
         }
@@ -180,7 +180,6 @@ void getYourFix(char * aLine, int caseNum){
     // When control reaches here, we should have a stack containing only a single 'T' or 'F', otherwise, a () was given
     if ( top(aStack) == 'T'){
         printf("%d. true\n",caseNum);
-        free(pop(&aStack));
     }
     else if ( top(aStack)=='F'){
         printf("%d. false\n",caseNum);
@@ -209,7 +208,7 @@ struct stack * push(struct stack * root, struct stack * newTop){
 struct stack * pop(struct stack ** root){
     struct stack * tmp;
     tmp = NULL ;
-
+    
     if (*root != NULL ){
         tmp = (*root);
         (*root)=(*root)->next;
