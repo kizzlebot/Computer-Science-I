@@ -1,6 +1,6 @@
-/* Name: James Choi, Robert McCord
- * Date: October 20, 2013
- * Course: Computer Science-I 9:00AM (Mon,Wed,Fri)
+/* Name:       James Choi, Robert McCord
+ * Date:       October 20, 2013
+ * Course:     Computer Science-I 9:00AM (Mon,Wed,Fri)
  * Assignment: Recitation Project #4
  */
 #include <stdio.h>
@@ -12,23 +12,68 @@ struct stack{
     struct stack * next ;
 };
 
-
+/* Function: alloc
+ * Parameters: (char ch)
+ * Description: Allocates a new node with member ch and next pointed to NULL  */
 struct stack * alloc(char ch );
-struct stack * push(struct stack * root, struct stack * newTop);
-struct stack * pop(struct stack ** root);
-char   top(struct stack * root);
-void printStack(struct stack * root);
-void getYourFix(char * aLine, int caseNum);
-int getBool(char ch);
-char andOr(int aBool,struct stack * top,int count,int oddOrEven);
-int findDepth(char * expr, int curDepth);
-int main(){
-    struct stack * operators = NULL ;
-    struct stack * operands = NULL ;
-    struct stack * popped = NULL ;
 
+/* Function: push
+ * Parameters: (struct stack * root),(struct stack * newTop)
+ * Returns:    (struct stack *) New root
+ * Description: Puts newTop before root and returns the new root */
+struct stack * push(struct stack * root, struct stack * newTop);
+
+/* Function: pop
+ * Parameters: (struct stack * root)
+ * Returns:    (struct stack *) Element removed from top of stack
+ * Description: Modifies root pointer by changing the root to be the second, and then returns the removed element*/
+struct stack * pop(struct stack ** root);
+
+/* Function: top
+ * Parameters: (struct stack * root)
+ * Returns: N/A
+ * Description: Returns the char contained in the root node, without modifying the tree */
+char   top(struct stack * root);
+
+/* Function: getYourFix
+ * Parameters: (char * aLine),(int caseNum)
+ * Returns: N/A
+ * Description: Evalaluates the given expression with the most inner expression being an AND and it's outer being an Or and vice versa */
+void getYourFix(char * aLine, int caseNum);
+
+/* Function: getBool
+ * Parameters: (char ch )
+ * Returns: (int) Either 1 or 0 representing true and false respectfully
+ * Description: Returns the integer representation of given character 'T' or 'F' */
+int getBool(char ch);
+
+/* Function: toChar
+ * Parameters: (int i )
+ * Returns:    (char)   'T' or 'F'
+ * Description: Returns the char representation of given int 0 or 1  */
+char toChar(int i);
+
+/* Function:    andOr
+ * Parameters:  (int aBool)            Expression argument #1, boolean in integer form
+ *              (struct stack * top)   Expression argument #2, struct containing a char representing boolean
+ *              (int count)            Level of expression enclosure
+ *              (int oddoreven)        This number is the deepest level of enclosed expression, used to determine whether to AND or OR the two parameters given
+ * Returns:     (char ) Returns 'T' or 'F'
+ * Description: Given the deepest level of the entire expression, and the level of the given subexpression, this function determines whether to AND or OR the two params  */
+char andOr(int aBool,struct stack * top,int count,int oddOrEven);
+
+/* Function:    findDepth
+ * Parameters:  (char * expr)   String (char *) holding the entire expression
+ *              (int curDepth)  Used to keep track of largest depth in recursive calls
+ * Returns:     (int )          Integer representing the deepest level of enclosed subexpression in given expression
+ * Description: Finds deepest level of subexpression of the entire expression */
+int findDepth(char * expr, int curDepth);
+
+
+int main(){
     char * aLine = (char *)malloc(sizeof(char)*500);
     int i = 1 ;
+    // While we have more stuff in stream, read it and calculate it
     while (!feof(stdin) && scanf("%s",aLine)==1){
         getYourFix(aLine,i);
         i++ ;
@@ -45,12 +90,12 @@ int getBool(char ch){
     }
 }
 char andOr(int aBool,struct stack * top,int count,int oddOrEven){
-    // If the deepest level is odd then all odd levels are and'd
+    // If the deepest level is odd then all odd levels are and'd, and all evens are OR'd
     if (oddOrEven%2 == 1){
         if (count%2==1) return getBool(top->ch)&&aBool;
         else return getBool(top->ch)||aBool;
     }
-    // If the deepest level is even then all even levels are and'd
+    // If the deepest level is even then all even levels are and'd, and all odds or OR'd
     else{
         if (count%2==1) return getBool(top->ch)||aBool;
         else return getBool(top->ch)&&aBool;
@@ -59,15 +104,19 @@ char andOr(int aBool,struct stack * top,int count,int oddOrEven){
 int findDepth(char * expr, int curDepth){
     if (*expr != '\0'){
         int i = 0 ;
+        // Every opening parenthesis is a level more than the currentDepth
         if (*expr == '('){
             i = findDepth(expr+1,curDepth+1);
         }
+        // Every closing parenthesis is a level less than the currentDepth
         else if (*expr == ')'){
             i = findDepth(expr+1,curDepth-1);
         }
+        // Otherwise it's a letter "T" or "F"
         else{
             i = findDepth(expr+1,curDepth);
         }
+        // pass the highest value to the bottom of the call stack
         if ( i > curDepth) return i ;
         else return curDepth ;
     }
@@ -89,7 +138,7 @@ void getYourFix(char * aLine, int caseNum){
     int n = 0 ;
 
     int TorFx =  0 ;
-
+    // Find out how deep is the deepest subexpression in the given line
     int oddOrEven = findDepth(aLine,0);
     int i = 0 ;
     for ( i = 0 ; i < strlen(aLine) ; i++ ){
@@ -128,6 +177,7 @@ void getYourFix(char * aLine, int caseNum){
             }
         }
     }
+    // When control reaches here, we should have a stack containing only a single 'T' or 'F', otherwise, a () was given
     if ( top(aStack) == 'T'){
         printf("%d. true\n",caseNum);
         free(pop(&aStack));
