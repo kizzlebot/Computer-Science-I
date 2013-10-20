@@ -1,3 +1,8 @@
+/* Name: James Choi, Robert McCord
+ * Date: October 20, 2013
+ * Course: Computer Science-I 9:00AM (Mon,Wed,Fri)
+ * Assignment: Recitation Project #4
+ */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -13,7 +18,7 @@ struct stack * push(struct stack * root, struct stack * newTop);
 struct stack * pop(struct stack ** root);
 char   top(struct stack * root);
 void printStack(struct stack * root);
-void getYourFix(char * aLine);
+void getYourFix(char * aLine, int caseNum);
 int getBool(char ch);
 char andOr(int aBool,struct stack * top,int count,int oddOrEven);
 int findDepth(char * expr, int curDepth);
@@ -24,10 +29,9 @@ int main(){
 
     char * aLine = (char *)malloc(sizeof(char)*500);
     int i = 1 ;
-    while (scanf("%s",aLine) != EOF ){
-        printf("%d. ",i);
-        getYourFix(aLine);
-        i++;
+    while (!feof(stdin) && scanf("%s",aLine)==1){
+        getYourFix(aLine,i);
+        i++ ;
     }
     free(aLine);
 }
@@ -79,7 +83,7 @@ char toChar(int i){
         return 'F';
     }
 }
-void getYourFix(char * aLine){
+void getYourFix(char * aLine, int caseNum){
     struct stack * aStack ;
     struct stack * popped ;
     int n = 0 ;
@@ -125,14 +129,14 @@ void getYourFix(char * aLine){
         }
     }
     if ( top(aStack) == 'T'){
-        printf("true\n");
+        printf("%d. true\n",caseNum);
         free(pop(&aStack));
     }
     else if ( top(aStack)=='F'){
-        printf("false\n");
+        printf("%d. false\n",caseNum);
     }
     else{
-        printf("\n");
+        printf("");
     }
 }
 
@@ -156,7 +160,7 @@ struct stack * pop(struct stack ** root){
     struct stack * tmp;
     tmp = NULL ;
 
-    if (root!=NULL ){
+    if (*root != NULL ){
         tmp = (*root);
         (*root)=(*root)->next;
         tmp->next = NULL ;
@@ -170,13 +174,4 @@ char top(struct stack * root){
         return ch ;
     }
     else return '\0';
-}
-void printStack(struct stack * root){
-    if (root != NULL){
-        printf("%c ",root->ch);
-        printStack(root->next);
-    }
-    else{
-        printf("\n");
-    }
 }
