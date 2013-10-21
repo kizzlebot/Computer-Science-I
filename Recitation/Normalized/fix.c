@@ -7,49 +7,50 @@
 #include <string.h>
 #include <stdlib.h>
 
+// I got stacks $ $
 struct stack{
     char ch ;
     struct stack * next ;
 };
 
-/* Function: alloc
- * Parameters: (char ch)
+/* Function:    alloc
+ * Parameters:  (char ch)
  * Description: Allocates a new node with member ch and next pointed to NULL  */
 struct stack * alloc(char ch );
 
-/* Function: push
- * Parameters: (struct stack * root),(struct stack * newTop)
- * Returns:    (struct stack *) New root
+/* Function:    push
+ * Parameters:  (struct stack * root),(struct stack * newTop)
+ * Returns:     (struct stack *) New root
  * Description: Puts newTop before root and returns the new root */
 struct stack * push(struct stack * root, struct stack * newTop);
 
-/* Function: pop
- * Parameters: (struct stack * root)
- * Returns:    (struct stack *) Element removed from top of stack
+/* Function:    pop
+ * Parameters:  (struct stack * root)
+ * Returns:     (struct stack *) Element removed from top of stack
  * Description: Modifies root pointer by changing the root to be the second, and then returns the removed element*/
 struct stack * pop(struct stack ** root);
 
-/* Function: top
- * Parameters: (struct stack * root)
- * Returns: N/A
+/* Function:    top
+ * Parameters:  (struct stack * root)
+ * Returns:     N/A
  * Description: Returns the char contained in the root node, without modifying the tree */
 char   top(struct stack * root);
 
-/* Function: getYourFix
- * Parameters: (char * aLine),(int caseNum)
- * Returns: N/A
- * Description: Evalaluates the given expression with the most inner expression being an AND and it's outer being an Or and vice versa */
+/* Function:    getYourFix
+ * Parameters:  (char * aLine),(int caseNum)
+ * Returns:     N/A
+ * Description: Evaluates the given expression with the most inner expression being an AND and it's outer being an Or and vice versa */
 void getYourFix(char * aLine, int caseNum);
 
-/* Function: getBool
- * Parameters: (char ch )
- * Returns: (int) Either 1 or 0 representing true and false respectfully
+/* Function:    getBool
+ * Parameters:  (char ch )
+ * Returns:     (int) Either 1 or 0 representing true and false respectfully
  * Description: Returns the integer representation of given character 'T' or 'F' */
 int getBool(char ch);
 
-/* Function: toChar
- * Parameters: (int i )
- * Returns:    (char)   'T' or 'F'
+/* Function:    toChar
+ * Parameters:  (int i )
+ * Returns:     (char)   'T' or 'F'
  * Description: Returns the char representation of given int 0 or 1  */
 char toChar(int i);
 
@@ -78,8 +79,9 @@ int main(){
         getYourFix(aLine,i);
         i++ ;
     }
+    free(aLine);
+    return 0 ;
 }
-
 int getBool(char ch){
     if (ch == 'F'){
         return 0 ;
@@ -132,20 +134,21 @@ char toChar(int i){
     }
 }
 void getYourFix(char * aLine, int caseNum){
-    struct stack * aStack ;
-    struct stack * popped ;
+    struct stack * aStack = NULL ;
+    struct stack * popped = NULL ;
     int n = 0 ;
-    
+
     int TorFx =  0 ;
-    // Find out how deep is the deepest subexpression in the given line
+    // Find out how deep the rabbit hole goes
     int oddOrEven = findDepth(aLine,0);
     int i = 0 ;
     for ( i = 0 ; i < strlen(aLine) ; i++ ){
+        // Kepp pushing if current isn't ')'
         if ( aLine[i] != ')'){
+            // but if we pass a ( along the way, increment n
             if ( aLine[i] == '('){
                 n++ ;
             }
-            // Keep pushing everything preceding a )
             aStack = push(aStack,alloc(aLine[i]));
         }
         // Encountered a )
@@ -159,33 +162,33 @@ void getYourFix(char * aLine, int caseNum){
                 while (top(aStack)!='('){
                     popped = pop(&aStack);
                     TorFx = andOr(TorFx,popped,n,oddOrEven);
-                    // free(popped); // get rid of T or F
                 }
                 // Free (
-                // free(pop(&aStack));
-                pop(&aStack);
+                free(pop(&aStack));
                 // Everytime a ( is freed, we move up a level
                 n-- ;
-                // replace with T or F
+                // replace previous spot containing ( with T or F
                 aStack = push(aStack,alloc(toChar(TorFx)));
             }
             // Must've been ()
             else{
                 // Free (
-                pop(&aStack);
+                free(pop(&aStack));
                 n--;
             }
         }
     }
-    // When control reaches here, we should have a stack containing only a single 'T' or 'F', otherwise, a () was given
+    // When control reaches here, we reached a \0 and we should have a stack containing only a single 'T' or 'F', otherwise, a () was given
     if ( top(aStack) == 'T'){
+        //printf("\e[38;%i;%im%d. false\e[0m\n",caseNum%256,caseNum%256,caseNum);
         printf("%d. true\n",caseNum);
     }
     else if ( top(aStack)=='F'){
+        //printf("\e[38;%i;%im%d. false\e[0m\n",caseNum%256,caseNum%256,caseNum);
         printf("%d. false\n",caseNum);
     }
     else{
-        printf("");
+        printf(" "); // Come on.... that wasn't even an expression
     }
 }
 
@@ -208,7 +211,7 @@ struct stack * push(struct stack * root, struct stack * newTop){
 struct stack * pop(struct stack ** root){
     struct stack * tmp;
     tmp = NULL ;
-    
+
     if (*root != NULL ){
         tmp = (*root);
         (*root)=(*root)->next;
