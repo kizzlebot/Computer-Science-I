@@ -1,13 +1,14 @@
-// Arup Guha
+
 // 6/26/07
 // Example of how to implement a queue with a linked list.
 #include <stdio.h>
-
+#include <stdlib.h>
+#include <string.h>
 #define EMPTY -1
 
 // Stores one node of the linked list.
 struct node {
-    int data;
+    int * data;
     struct node* next;
 };
 
@@ -17,52 +18,38 @@ struct queue {
     struct node* back;
 };
 
+void findExit(struct queue * queue, char ** board,int ** nBoard);
+void callCases(int numCases);
+void recursiveRead(char ** sets , int ** nBoard, int numLines, int cols);
 void init(struct queue* qPtr);
-int enqueue(struct queue* qPtr, int val);
-int dequeue(struct queue* qPtr);
+int enqueue(struct queue* qPtr, int * val);
+int * dequeue(struct queue* qPtr);
 int empty(struct queue* qPtr);
-int front(struct queue* qPtr);
+int * front(struct queue* qPtr);
 
 int main() {
-    
+
     // Allocate space for our queue and initialize it.
     struct queue* MyQueuePtr = (struct queue*)malloc(sizeof(struct queue));
     init(MyQueuePtr);
-    
-    // Enqueue some items.
-    enqueue(MyQueuePtr, 3);
-    enqueue(MyQueuePtr, 7);
-    enqueue(MyQueuePtr, 4);
-    
-    // Try one dequeue.
-    printf("Dequeue %d\n", dequeue(MyQueuePtr));
-    
-    // Enqueue one more item, then try several dequeues and one front.
-    enqueue(MyQueuePtr, 2);
-    printf("Dequeue %d\n", dequeue(MyQueuePtr));
-    printf("At Front of Queue Now: %d\n", front(MyQueuePtr));
-    printf("Dequeue %d\n", dequeue(MyQueuePtr));
-    printf("Dequeue %d\n", dequeue(MyQueuePtr));
-    
-    // See if we can detect an empty queue.
-    printf("Is empty: %d\n", empty(MyQueuePtr));
-    
-    // Try enqueuing and dequeuing again to make sure that our previous
-    // operations didn't "corrupt" the queue.
-    enqueue(MyQueuePtr, 5);
-    enqueue(MyQueuePtr, 9);
-    printf("Dequeue %d\n", dequeue(MyQueuePtr));
-    printf("Dequeue %d\n", dequeue(MyQueuePtr));
-    
-    system("PAUSE");
+
+    int firstLine ;
+    scanf("%d",&firstLine);
+    callCases(firstLine);// ;P
     return 0;
 }
 
+int * alloc(int x, int y ){
+    int * ret = (int *)malloc(sizeof(int)*2);
+    ret[0] = x ;
+    ret[1] = y ;
+	return ret ;
+}
 // Pre-condition: qPtr points to a valid struct queue.
 // Post-condition: The struct that qPtr points to will be set up to represent an
 //                 empty queue.
 void init(struct queue* qPtr) {
-     
+
      // Just set both pointers to NULL!
      qPtr->front = NULL;
      qPtr->back = NULL;
@@ -72,74 +59,78 @@ void init(struct queue* qPtr) {
 //                enqueue into the queue pointed to by qPtr.
 // Post-condition: If the operation is successful, 1 will be returned, otherwise
 //                 no change will be made to the queue and 0 will be returned.
-int enqueue(struct queue* qPtr, int val) {
+int enqueue(struct queue* qPtr, int * val) {
 
-    struct node* temp;
-    
+    struct node * temp;
+
     // Allocate space for a new node to add into the queue.
-    temp = (struct node*)malloc(sizeof(struct node));
-    
+    temp = (struct node*) malloc(sizeof(struct node));
+
     // This case checks to make sure our space got allocated.
     if (temp != NULL) {
-             
+
         // Set up our node to enqueue into the back of the queue.
-        temp->data = val;
+        temp->data   = (int *)malloc(sizeof(int)*2);
+        temp->data[0] = val[0];
+        temp->data[1] = val[1];
+        free(val);
         temp->next = NULL;
-        
+
         // If the queue is NOT empty, we must set the old "last" node to point
         // to this newly created node.
         if (qPtr->back != NULL)
             qPtr->back->next = temp;
-        
+
         // Now, we must reset the back of the queue to our newly created node.
         qPtr->back = temp;
-        
+
         // If the queue was previously empty we must ALSO set the front of the
         // queue.
         if (qPtr->front == NULL)
             qPtr->front = temp;
-        
+
         // Signifies a successful operation.
         return 1;
     }
-    
+
     // No change to the queue was made because we couldn't find space for our
     // new enqueue.
     else
-        return 0;   
+        return 0;
 }
 
 // Pre-condition: qPtr points to a valid struct queue.
 // Post-condition: If the queue pointed to by qPtr is non-empty, then the value
-//                 at the front of the queue is deleted from the queue and 
+//                 at the front of the queue is deleted from the queue and
 //                 returned. Otherwise, -1 is returned to signify that the queue
 //                 was already empty when the dequeue was attempted.
-int dequeue(struct queue* qPtr) {
-    
+int * dequeue(struct queue* qPtr) {
+
     struct node* tmp;
-    int retval;
-    
+    int * retval;
+
+
     // Check the empty case.
     if (qPtr->front == NULL)
-        return EMPTY;
-    
+        return NULL ;
+
     // Store the front value to return.
     retval = qPtr->front->data;
-        
+
     // Set up a temporary pointer to use to free the memory for this node.
     tmp = qPtr->front;
-    
+
     // Make front point to the next node in the queue.
     qPtr->front = qPtr->front->next;
-    
+
     // If deleting this node makes the queue empty, we have to change the back
     // pointer also!
     if (qPtr->front == NULL)
         qPtr->back = NULL;
-        
+
     // Free our memory.
     free(tmp);
-    
+
     // Return the value that just got dequeued.
     return retval;
 }
@@ -151,12 +142,116 @@ int empty(struct queue* qPtr) {
 }
 
 // Pre-condition: qPtr points to a valid struct queue.
-// Post-condition: if the queue pointed to by qPtr is non-empty, the value 
+// Post-condition: if the queue pointed to by qPtr is non-empty, the value
 //                 stored at the front of the queue is returned. Otherwise,
 //                 -1 is returned to signify that this queue is empty.
-int front(struct queue* qPtr) {
+int * front(struct queue* qPtr) {
     if (qPtr->front != NULL)
         return qPtr->front->data;
     else
-        return EMPTY;
+        return NULL ;
 }
+void callCases(int numCases){
+    if ( numCases == 0 ){
+        return ;
+    }
+    // Read the line containing the rows and columns
+    int rows, cols;
+    scanf("%d %d",&rows,&cols);
+
+    // Read the input file into board
+    char ** board = (char **)malloc(sizeof(char *)*(rows));
+    int ** nBoard = (int **)malloc(sizeof(int *)*(rows));
+    recursiveRead(board,nBoard,rows,cols);
+
+    int i = 0 ;
+    int j = 0 ;
+
+    // Use the char array to find the coord of the 'S' character and queue the first spot
+    struct queue * qu;
+    for ( i = 0 ; i < rows ; i++){
+        for ( j = 0 ; j < cols ; j++){
+            if (board[i][j] == 'S'){
+                enqueue(qu,alloc(i,j));
+            }
+        }
+    }
+    // Find the shortest distance to get out of maze (if there is one), print -1 if not.
+    findExit(qu,board,nBoard) ;
+
+    // Free all the resources
+    free(board);
+    free(nBoard);
+
+    // Recursive call
+    callCases(numCases);
+}
+void recursiveRead(char ** sets , int ** nBoard, int numLines, int cols){
+    // Base case
+    if (numLines == 0 ) return ;
+
+    // No particular reason for the calloc.
+    *sets = (char *)calloc(cols+1,sizeof(char )) ;
+    *nBoard = (int *)calloc(cols+1,sizeof(int )) ;
+    scanf("%s",*sets); // Read the whole line
+
+    // find the 'S' and put a 0 in the nBoard there, otherwise -1
+    int i = 0 ;
+    for (i = 0 ; i < cols ;i++ ){
+        if (*(*(sets)+i)=='S' ){
+            *(*nBoard+i)=0;
+        }
+        else{
+            *(*nBoard+i)=-1;
+        }
+    }
+
+    // Recursive call with the next index of and numSets-1
+    recursiveRead(sets+1,nBoard+1,numLines-1,cols);
+}
+
+void findExit(struct queue * queue, char ** board,int ** nBoard){
+    //while queue is not Empty
+    int * dq ;
+    while (!empty(queue)){
+
+        dq = dequeue(queue);
+        // dequeue.. Make me have to dequeue off
+        dq = dequeue(queue);
+
+        if ( dq == NULL ) printf("-1\n");
+        // if this is the goal, print the number stored there and get out of here  ;
+        if (board[dq[0]][dq[1]] == '~' ){
+            // print the value stored at the coord and get outta here
+            printf("%d \n",nBoard[dq[0]][dq[1]]);
+            return;
+        }
+        // else
+        else{
+            /* In each of the four neighbors of current coordinate, if neighbor is unvisited and not blocked,
+             * then put the number of steps required to move from starting point to there,
+             * which is always going to be the number stored at this coordinate+1, and
+             * enqueue it */
+            if ( nBoard[dq[0]][dq[1]+1] == -1 && board[dq[0]][dq[1]+1] != 'X' ){ // Left Adjacent
+                 nBoard[dq[0]][dq[1]+1] = nBoard[dq[0]][dq[1]]+1;
+                 enqueue(queue,alloc(dq[0],dq[1]+1));
+            }
+            if ( nBoard[dq[0]][dq[1]-1] == -1 && board[dq[0]][dq[1]-1] != 'X' ){ // Right Adjacent
+                nBoard[dq[0]][dq[1]-1] = nBoard[dq[0]][dq[1]]+1;
+                enqueue(queue,alloc(dq[0],dq[1]-1));
+            }
+            if ( nBoard[dq[0]+1][dq[1]] == -1 && board[dq[0]+1][dq[1]] != 'X' ){ // Top Adjacent
+                nBoard[dq[0]+1][dq[1]] = nBoard[dq[0]][dq[1]]+1;
+                enqueue(queue,alloc(dq[0]+1,dq[1]));
+            }
+            if ( nBoard[dq[0]-1][dq[1]] == -1 && board[dq[0]-1][dq[1]] != 'X' ){ // Bottom Adjacent
+                nBoard[dq[0]-1][dq[1]] = nBoard[dq[0]][dq[1]]+1;
+                enqueue(queue,alloc(dq[0]-1,dq[1]));
+            }
+        }
+        dq = dequeue(queue);
+    }
+    free(dq);
+    // If control reached here, there was no way to get outta here
+}
+

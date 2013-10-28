@@ -9,27 +9,21 @@ struct tree_node {
   struct tree_node *right;
 };
 
+struct tree_node *create_node(int val);
+void inorder(struct tree_node *current_ptr);
+struct tree_node* insert(struct tree_node *root, struct tree_node *element);
+int add(struct tree_node *current_ptr);
+int find(struct tree_node *current_ptr, int val);
+int menu();
+struct tree_node* parent(struct tree_node *root, struct tree_node *node);
+struct tree_node* minVal(struct tree_node *root);
+struct tree_node* maxVal(struct tree_node *root);
+int isLeaf(struct tree_node *node);
+int hasOnlyLeftChild(struct tree_node *node);
+int hasOnlyRightChild(struct tree_node *node);
+struct tree_node* findNode(struct tree_node *current_ptr, int value);
+struct tree_node* delete(struct tree_node* root, int value);
 
-void prob3(struct tree_node * nodePtr ){
-    if (nodePtr != NULL ){
-        if (nodePtr->data %3 == 0 ){
-            printf(" %d\n",nodePtr->data);
-            prob3(nodePtr->left);
-        }
-        else{
-            if ( nodePtr->data % 3 == 1 ){
-                printf("%d\n",nodePtr->data+2);
-                prob3(nodePtr->right);
-            }
-            else{
-                if ( nodePtr->data % 3 == 2 ){
-                    prob3(nodePtr->left);
-                    prob3(nodePtr->right);
-                }
-            }
-        }
-    }
-}
 void modifyT(struct tree_node * node_ptr , int key , int num ){
     if (node_ptr != NULL ){
         if ( node_ptr->data % 3 == 0 ){
@@ -42,58 +36,39 @@ void modifyT(struct tree_node * node_ptr , int key , int num ){
             modifyT(node_ptr->right, key - 4, num);
             modifyT(node_ptr->left, key, num + 5);
         }
-
         else{
             node_ptr->data = num;
             modifyT(node_ptr->right, key - 2, num + 10);
             modifyT(node_ptr->left, key + 5, num - 7);
         }
-
     }
 }
-struct tree_node *create_node(int val);
-void inorder(struct tree_node *current_ptr);
-struct tree_node* insert(struct tree_node *root,
-                         struct tree_node *element);
-int add(struct tree_node *current_ptr);
 
-int find(struct tree_node *current_ptr, int val);
 
-struct tree_node* parent(struct tree_node *root, struct tree_node *node);
-struct tree_node* minVal(struct tree_node *root);
-struct tree_node* maxVal(struct tree_node *root);
-int isLeaf(struct tree_node *node);
-int hasOnlyLeftChild(struct tree_node *node);
-int hasOnlyRightChild(struct tree_node *node);
-struct tree_node* findNode(struct tree_node *current_ptr, int value);
-struct tree_node* delete(struct tree_node* root, int value);
-
-int menu();
 
 int main() {
-
   struct tree_node *my_root=NULL, *temp_node;
   int done = 0,ans=1, val;
   // Create the node.
 
   // Insert the value.
-      my_root = insert(my_root, create_node(55));
-      my_root = insert(my_root, create_node(27));
-      my_root = insert(my_root, create_node(60));
-      my_root = insert(my_root, create_node(17));
-      my_root = insert(my_root, create_node(38));
-      my_root = insert(my_root, create_node(91));
-      my_root = insert(my_root, create_node(21));
-      my_root = insert(my_root, create_node(72));
+    my_root = insert(my_root, create_node(55));
+    my_root = insert(my_root, create_node(27));
+    my_root = insert(my_root, create_node(60));
+    my_root = insert(my_root, create_node(17));
+    my_root = insert(my_root, create_node(38));
+    my_root = insert(my_root, create_node(91));
+    my_root = insert(my_root, create_node(21));
+    my_root = insert(my_root, create_node(72));
+
     inorder(my_root);
     printf("\n");
     modifyT(my_root,7,65);
     inorder(my_root);
-  return 0;
+    return 0;
 }
 
 void inorder(struct tree_node *current_ptr) {
-
   // Only traverse the node if it's not null.
   if (current_ptr != NULL) {
     inorder(current_ptr->left); // Go Left.
@@ -102,14 +77,11 @@ void inorder(struct tree_node *current_ptr) {
   }
 }
 
-struct tree_node* insert(struct tree_node *root,
-                         struct tree_node *element) {
+struct tree_node* insert(struct tree_node *root, struct tree_node *element) {
 
   // Inserting into an empty tree.
-  if (root == NULL)
-    return element;
+  if (root == NULL) return element;
   else {
-
     // element should be inserted to the right.
     if (element->data > root->data) {
 
@@ -133,7 +105,6 @@ struct tree_node* insert(struct tree_node *root,
       else
         root->left = element;
     }
-
     // Return the root pointer of the updated tree.
     return root;
   }
@@ -186,27 +157,19 @@ int add(struct tree_node *current_ptr) {
 // root. If the node is the root of the tree, or the node doesn't exist in
 // the tree, null will be returned.
 struct tree_node* parent(struct tree_node *root, struct tree_node *node) {
-
   // Take care of NULL cases.
   if (root == NULL || root == node)
     return NULL;
-
   // The root is the direct parent of node.
   if (root->left == node || root->right == node)
     return root;
-
   // Look for node's parent in the left side of the tree.
   if (node->data < root->data)
     return parent(root->left, node);
-
   // Look for node's parent in the right side of the tree.
-  else if (node->data > root->data)
-    return parent(root->right, node);
-
+  else if (node->data > root->data) return parent(root->right, node);
   return NULL; // Catch any other extraneous cases.
-
 }
-
 // Returns a pointer to the node storing the minimum value in the tree
 // with the root, root. Will not work if called with an empty tree.
 struct tree_node* minVal(struct tree_node *root) {

@@ -137,7 +137,7 @@ void getYourFix(char * aLine, int caseNum){
     struct stack * aStack = NULL ;
     struct stack * popped = NULL ;
     int n = 0 ;
-    
+
     int TorFx =  0 ;
     // Find out how deep the rabbit hole goes
     int oddOrEven = findDepth(aLine,0);
@@ -211,8 +211,8 @@ struct stack * push(struct stack * root, struct stack * newTop){
 struct stack * pop(struct stack ** root){
     struct stack * tmp;
     tmp = NULL ;
-    
-    if (*root != NULL ){
+
+    if (root != NULL ){
         tmp = (*root);
         (*root)=(*root)->next;
         tmp->next = NULL ;
