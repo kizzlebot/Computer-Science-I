@@ -91,7 +91,14 @@ void printTree(struct node * tree);
  *               and put the value into rtn which should initially be NULL.  rtn will remain NULL if match was not found
  */
 void getQuery(organT ** rtn , struct node * tree , char * organ, char * bloodtype);
-void recursiveFree(struct node * tree);
+
+/* Function:     recursivefree
+ * Return:       void
+ * Parameters:   struct node * tree
+ * Description:  Give the root of a binary tree, it will post-order traverse through the binary tree,
+ *               freeing the elements as it comes up the tree.
+ */
+void recursiveFree(struct node ** tree);
 int main(){
     init();
 }
@@ -125,7 +132,7 @@ void init(){
         free(organQ);
         free(bloodtypeQ);
     }
-    recursiveFree(tree);
+    recursiveFree(&tree);
 }
 void printPatient(organT * patient){
     if (patient != NULL && patient->name != NULL && patient->organname != NULL ){
@@ -272,16 +279,17 @@ void getQuery(organT ** rtn , struct node * tree , char * organ, char * bloodtyp
         getQuery(rtn , tree->right,organ,bloodtype);
     }
 }
-void recursiveFree(struct node * tree ){
-    if ( tree != NULL ){
+void recursiveFree(struct node ** tree ){
+    if ( *tree != NULL ){
         // go all the way left
-        recursiveFree(tree->left);
+        recursiveFree(&((*tree)->left));
+        // Back out and
         // go all the way right
-        recursiveFree(tree->right);
-        // free this
-        free(tree->data->name);
-        free(tree->data->organname);
-        free(tree->data);
-        free(tree);
+        recursiveFree(&((*tree)->right));
+        // freeinge every that's ever been malloc'd
+        free((*tree)->data->name);
+        free((*tree)->data->organname);
+        free((*tree)->data);
+        free(*tree);
     }
 }
