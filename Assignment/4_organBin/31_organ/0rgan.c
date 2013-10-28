@@ -129,7 +129,7 @@ void init(){
 }
 void printPatient(organT * patient){
     if (patient != NULL && patient->name != NULL && patient->organname != NULL ){
-        printf("%s %s \n",patient->name,patient->organname);
+        printf("%s %s\n",patient->name,patient->organname);
         //printf("%s %s %s %d%c%d%c%d %d%c%d\n",patient->name,patient->organname,patient->bloodtype,patient->dateAdded.month,'/',patient->dateAdded.day,'/',patient->dateAdded.year,patient->timeAdded.hour,':',patient->timeAdded.minute);
     }
     // If patient is NULL, it probably was never found
@@ -152,7 +152,7 @@ organT * readPatient(){
 
     scanf("%s%s%s%d%c%d%c%d%d%c%d",name,organname,bloodtype,&month,&ch,&day,&ch,&year,&hour,&ch,&minute);
 
-    // Allocate exactly the amount of space required, and copy temps into created organT *
+    /* Allocate exactly the amount of space required, and copy temps into created organT */
     organT  * patient = (organT *)malloc(sizeof(organT));
     patient->name = (char *) malloc(sizeof(char)*(strlen(name)+1));
     patient->organname = (char *) malloc(sizeof(char)*(strlen(organname)+1));
@@ -254,14 +254,17 @@ void insert(struct node ** root, organT * ins ){
 void printTree(struct node * tree){
     if ( tree != NULL ){
         printTree(tree->left);
-        printf("%s %s \n",tree->data->name,tree->data->organname);
+        printf("%s %s\n",tree->data->name,tree->data->organname);
         printTree(tree->right);
     }
 }
 void getQuery(organT ** rtn , struct node * tree , char * organ, char * bloodtype){
     if ( tree != NULL ){
         getQuery(rtn , tree->left,organ,bloodtype);
-        if (strcmp(organ,tree->data->organname)==0 && strcmp(bloodtype,tree->data->bloodtype)==0 && tree->data->received == 0 && *rtn == NULL ) {
+        if (strcmp(organ,tree->data->organname)==0 &&
+            strcmp(bloodtype,tree->data->bloodtype)==0 &&
+            tree->data->received == 0 && *rtn == NULL ) {
+
             tree->data->received = 1 ;
             *rtn = tree->data;
             return ;
