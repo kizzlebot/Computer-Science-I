@@ -4,7 +4,7 @@ Computer Science Exam #3 Overview
 
 Exam #3 Topics
 =====================
-- [ ] Stacks
+- [x] Stacks
   - [ ] Array implementation
   - [ ] Linked List Implementation
   - [ ] Run times of each operation
