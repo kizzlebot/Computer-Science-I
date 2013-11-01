@@ -16,24 +16,48 @@ node * alloc(int val );
 node * avlAlloc(int val );
 void printInOrder(node * root);
 int evaluate(node * root);
+int num_nodes(node * root) {
+    if (root == NULL) return 0;
+    return 1 + num_nodes(root->left) + num_nodes(root->right);
+}
+
+int get_rank(node * root, int k) {
+
+    int numleft = num_nodes(root);/*** Q8 ***/ ;
+    if (numleft == k-1){
+        return root->data;/*** Q9 ***/;
+    }
+    else if (numleft > k-1){
+        return get_rank(root->left, k);
+    }
+    else{
+        return get_rank(root->right,numleft-k);
+    }
+}
 
 int main(){
-    node * bintree = alloc(-1);
+    node * bintree = alloc(5);
     int i = 0 ;
     while ( i != -1 ){
         printf("Enter: ");
         scanf("%d",&i);
+        if ( i == -1 ) break;
         insert(&bintree,alloc(i));
-        printInOrder(bintree);
+//        printInOrder(bintree);
         printf("\n");
         if (i==-2){
-            printf("%d\n",sumTree(bintree));
+            //printf("%d\n",sumTree(bintree));
         }
     }
+
+    printf("Val %d\n",get_rank(bintree,num_nodes(bintree))) ;
+    printf("Val %d\n",get_rank(bintree,get_rank(bintree,num_nodes(bintree)))) ;
 }
 node * alloc(int val ){
     node * rtn = (node *) malloc(sizeof(node));
     rtn->data = val ;
+    rtn->left = NULL ;
+    rtn->right = NULL ;
     return rtn;
 }
 void printInOrder(node * root){
@@ -62,7 +86,7 @@ void insert (node ** root, node * ins){
         *root = ins ;
         return ;
     }
-    if ( (*root)->data > ins->data) insert(&((*root)->left), ins);
+    if (  ins->data <  (*root)->data ) insert(&((*root)->left), ins);
     else insert(&((*root)->right), ins);
 
 }
