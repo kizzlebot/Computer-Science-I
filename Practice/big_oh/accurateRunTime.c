@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+/*
+ * > I run this
+ */
 int main(){
     int userIn ;
     printf("Enter a value: ");
