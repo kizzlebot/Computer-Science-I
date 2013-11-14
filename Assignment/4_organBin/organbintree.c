@@ -38,7 +38,6 @@ typedef struct {
 	char bloodtype[BLOODTYPESIZE];
 	dateT dateAdded ;
 	timeT timeAdded;
-	int received;
 } organT;
 // Binary Tree
 struct node {
@@ -91,14 +90,7 @@ void printTree(struct node * tree);
  *               and put the value into rtn which should initially be NULL.  rtn will remain NULL if match was not found
  */
 void getQuery(organT ** rtn , struct node * tree , char * organ, char * bloodtype);
-
-/* Function:     recursivefree
- * Return:       void
- * Parameters:   struct node * tree
- * Description:  Give the root of a binary tree, it will post-order traverse through the binary tree,
- *               freeing the elements as it comes up the tree.
- */
-void recursiveFree(struct node ** tree);
+void recursiveFree(struct node * tree);
 int main(){
     init();
 }
@@ -129,14 +121,16 @@ void init(){
 
         getQuery(&rtn, tree,organQ,bloodtypeQ);
         printPatient((rtn));
+
         free(organQ);
         free(bloodtypeQ);
+        free(rtn);
     }
-    recursiveFree(&tree);
+    recursiveFree(tree);
 }
 void printPatient(organT * patient){
     if (patient != NULL && patient->name != NULL && patient->organname != NULL ){
-        printf("%s %s\n",patient->name,patient->organname);
+        printf("%s %s \n",patient->name,patient->organname);
         //printf("%s %s %s %d%c%d%c%d %d%c%d\n",patient->name,patient->organname,patient->bloodtype,patient->dateAdded.month,'/',patient->dateAdded.day,'/',patient->dateAdded.year,patient->timeAdded.hour,':',patient->timeAdded.minute);
     }
     // If patient is NULL, it probably was never found
@@ -159,11 +153,10 @@ organT * readPatient(){
 
     scanf("%s%s%s%d%c%d%c%d%d%c%d",name,organname,bloodtype,&month,&ch,&day,&ch,&year,&hour,&ch,&minute);
 
-    /* Allocate exactly the amount of space required, and copy temps into created organT */
+    // Allocate exactly the amount of space required, and copy temps into created organT *
     organT  * patient = (organT *)malloc(sizeof(organT));
     patient->name = (char *) malloc(sizeof(char)*(strlen(name)+1));
     patient->organname = (char *) malloc(sizeof(char)*(strlen(organname)+1));
-    patient->received = 0 ;
 
     strcpy(patient->name,name);
     strcpy(patient->organname,organname);
@@ -261,35 +254,36 @@ void insert(struct node ** root, organT * ins ){
 void printTree(struct node * tree){
     if ( tree != NULL ){
         printTree(tree->left);
-        printf("%s %s\n",tree->data->name,tree->data->organname);
+        printf("%s %s \n",tree->data->name,tree->data->organname);
         printTree(tree->right);
     }
 }
 void getQuery(organT ** rtn , struct node * tree , char * organ, char * bloodtype){
     if ( tree != NULL ){
         getQuery(rtn , tree->left,organ,bloodtype);
-        if (strcmp(organ,tree->data->organname)==0 &&
-            strcmp(bloodtype,tree->data->bloodtype)==0 &&
-            tree->data->received == 0 && *rtn == NULL ) {
-
-            tree->data->received = 1 ;
-            *rtn = tree->data;
-            return ;
+        if ( tree->data != NULL ){
+            if (strcmp(organ,tree->data->organname)==0 && strcmp(bloodtype,tree->data->bloodtype)==0 && *rtn == NULL ) {
+                *rtn = tree->data;
+                tree->data = NULL ;
+                return ;
+            }
         }
         getQuery(rtn , tree->right,organ,bloodtype);
     }
 }
-void recursiveFree(struct node ** tree ){
-    if ( *tree != NULL ){
+void recursiveFree(struct node * tree ){
+    if ( tree != NULL ){
         // go all the way left
-        recursiveFree(&((*tree)->left));
-        // Back out and
+        recursiveFree(tree->left);
         // go all the way right
-        recursiveFree(&((*tree)->right));
-        // freeinge every that's ever been malloc'd
-        free((*tree)->data->name);
-        free((*tree)->data->organname);
-        free((*tree)->data);
-        free(*tree);
+        recursiveFree(tree->right);
+        // free this
+        if ( tree->data != NULL ){
+            free(tree->data->name);
+            free(tree->data->organname);
+            free(tree->data);
+            free(tree);
+        }
     }
+
 }
