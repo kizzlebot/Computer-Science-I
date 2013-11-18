@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 /*
  * Name: James Choi
  * Date: August 28, 2013
@@ -92,7 +93,11 @@ void printTree(struct node * tree);
 void getQuery(organT ** rtn , struct node * tree , char * organ, char * bloodtype);
 void recursiveFree(struct node * tree);
 int main(){
+    float start = clock();
     init();
+    float end= clock();
+    printf("Run-Time: %f\n",(end-start)/CLOCKS_PER_SEC);
+    return 0 ;
 }
 
 void init(){
