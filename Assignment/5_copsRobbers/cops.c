@@ -16,6 +16,9 @@ int factorial(int n){
   }
 }
 
+/*
+ * Returns an int * containing the ith permution of 0,1,2....n-1
+ */
 int * ithPermutation(int n, int i){
   int j, k = 0;
   int *fact = (int *)calloc(n, sizeof(int));
@@ -43,55 +46,50 @@ int * ithPermutation(int n, int i){
   return perm ;
 }
 
+/*
+ * Assigns makes Robber ** into array filled with robbers in each index, by reference so no need to return anything
+ */
 void readRobbers(Robber ** rob , int numRobbers){
   *rob = (Robber *) calloc((numRobbers+1),sizeof(Robber));
-
-  int i = 0 ;
-  int x, y , spd , dir ;
-  x = 0 ;
-  y = 0 ;
-  spd = 0 ;
-  dir = 0 ;
+  int i, x, y , spd , dir ;
   for ( i = 0 ; i < numRobbers ; i++ ){
     scanf("%d %d %d %d",&x,&y,&dir,&spd);
     *(*rob+i) = initRobber(x,y,spd,dir);
   }
 }
+
+/*
+ * While input stream, read number of robbers, and copSpd. Read n number of robbers and make an array.
+ * Tries every permutation using perm[] keeping only minimum time generated. Prints it and reiterate
+ */
 void readAndExecute(){
-  int numRobbers ;
-  int spd = 0 ;
   while (!feof(stdin)){
+    int numRobbers, spd  ;
+    double time ,minTime  ;
+    int * perm ;
     scanf("%d %d",&numRobbers,&spd);
-    if (numRobbers == 0 && spd == 0) break;
+
+    if (numRobbers == 0 && spd == 0) break; // Must be the very most line in input file!
+
     Cop copper ;
-    copper.x = 0 ;
-    copper.y = 0 ;
-    copper.time = 0.0  ;
+    copper.x = copper.y = copper.time = 0.0  ;
     copper.speed = spd ;
 
     Robber * rob ;
     readRobbers(&rob,numRobbers);
-    double time =0;
-    double minTime = 0 ;
-    int j = 0 ;
 
-    int fact = factorial(numRobbers);
+    int j , i , fact = factorial(numRobbers);
 
-    int i = 0 ;
-    int * perm ;
     // try every permutation
     for ( j = 0 ; j < fact ; j++ ){
+      // Get the jth permuation array
       perm = ithPermutation(numRobbers,j);
-      copper.x = 0 ;
-      copper.y = 0 ;
-      copper.time = 0.0 ;
+      copper.x = copper.y = copper.time = 0.0 ;
 
       for ( i = 0 ; i < numRobbers ; i++){
-        time=getMinTime(copper,rob[perm[i]]) ;
-        copper.time+=time ;
+        copper.time+=getMinTime(copper,rob[perm[i]]) ;
         copper.x = rob[perm[i]].x+rob[perm[i]].speed*(copper.time)*cos((rob[perm[i]].direction*2*PI)/360);
         copper.y = rob[perm[i]].y+rob[perm[i]].speed*(copper.time)*sin((rob[perm[i]].direction*2*PI)/360);
-        //printf("(%d) Robber: %d %d %d %d Time: %f\n",i,rob[i].x,rob[i].y,rob[i].speed,rob[i].direction,time);
       }
       if ( j == 0 ) minTime = copper.time ;
       else{
@@ -99,34 +97,55 @@ void readAndExecute(){
       }
       free(perm);
     }
+
     printf("minTime:%f\n",minTime);
-    free(rob);
+    free(rob); // Done with robbers, tried every permutation
   }
 }
+/*
+ * Implements a binary search. Starting with a huge interval, will increment by inc and then decrement by inc/2
+ * then increment inc/4 then decrement by inc/8 until diff is 0.00000001 where it will break and return the found time
+ **/
 double getMinTime(Cop copper,Robber rob){
   double distChase =10;
-  // use copper.time to figure robber pos.
   double time = 0.0;
-  // while loop until copper.speed*t > distance
+  double inc = 10 ; // Value added/subtracted from time.
 
-  float inc = 10 ;
+  // Unconditional loop, break when condition met
   while ( 1 ){
+    ///////////////////////////// Increment ////////////////////////////////////////
+    //  Get copSpd*time > distChase by incrementing time by inc
     while (copper.speed*(time) < distChase){
       time+=inc;
       distChase = pow((pow((rob.x+rob.speed*(copper.time+time)*cos((rob.direction*2*PI)/360)-copper.x),2)+pow((rob.y+rob.speed*(copper.time+time)*sin((rob.direction*2*PI)/360)-copper.y),2)),0.5);
     }
-    inc/=2;
-    if (copper.speed*time-distChase < 0.0000001) break;
+
+    if (copper.speed*time-distChase < 0.00000001) break; // Guaranteed that copper.speed*time - distChase > 0
+
+    ///////////////////////////// Shrink the incrementor ////////////////////////////////////////
+    inc/=2; // Divide the increment in half and decrement at smaller and smaller intervals until copSpd*time < distChase
+
+
+
+
+
+
+    ///////////////////////////// Decrement ////////////////////////////////////////
+    //  Get copSpd*time < distChase by decrementing time by inc/2
     while (copper.speed*(time) > distChase ){
       time-=inc;
       distChase = pow((pow((rob.x+rob.speed*(copper.time+time)*cos((rob.direction*2*PI)/360)-copper.x),2)+pow((rob.y+rob.speed*(copper.time+time)*sin((rob.direction*2*PI)/360)-copper.y),2)),0.5);
     }
-    inc/=2;
-    if (distChase-copper.speed*time< 0.0000001) break;
+    if (distChase-copper.speed*time< 0.00000001) break; // Guaranteed that distChase - copper.speed*time > 0  because decremented until copper.speed*time is less than dist
+    ///////////////////////////// Shrink the incrementor ////////////////////////////////////////
+    inc/=2; // Divide the increment in half for the next iteration where it will increment at even smaller intervals
   }
   return time ;
 }
 
+/*
+ * Creates a robber instance with given parameter as fields and returns it
+ */
 Robber initRobber(int x, int y, int speed, int direction){
   Robber rtn  ;
   rtn.x = (float)x ;
