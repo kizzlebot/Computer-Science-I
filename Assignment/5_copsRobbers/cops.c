@@ -6,7 +6,9 @@
 #define PI 3.14159265358979323846
 
 
-
+/*
+ * Calculates the factorial becuase there is a maximum of n! permutations
+ */
 int factorial(int n){
   if ( n == 0 || n==1){
     return 1 ;
@@ -18,6 +20,7 @@ int factorial(int n){
 
 /*
  * Returns an int * containing the ith permution of 0,1,2....n-1
+ *  (0 <= i < n!)
  */
 int * ithPermutation(int n, int i){
   int j, k = 0;
@@ -47,7 +50,8 @@ int * ithPermutation(int n, int i){
 }
 
 /*
- * Assigns makes Robber ** into array filled with robbers in each index, by reference so no need to return anything
+ * Assigns makes Robber ** into array filled with robbers in each index,
+ * passed by reference so no need to return anything
  */
 void readRobbers(Robber ** rob , int numRobbers){
   *rob = (Robber *) calloc((numRobbers+1),sizeof(Robber));
@@ -69,7 +73,7 @@ void readAndExecute(){
     int * perm ;
     scanf("%d %d",&numRobbers,&spd);
 
-    if (numRobbers == 0 && spd == 0) break; // Must be the very most line in input file!
+    if (numRobbers == 0 && spd == 0) break; // Must be the last most line in input file that signifies the end
 
     Cop copper ;
     copper.x = copper.y = copper.time = 0.0  ;
@@ -91,21 +95,32 @@ void readAndExecute(){
         copper.x = rob[perm[i]].x+rob[perm[i]].speed*(copper.time)*cos((rob[perm[i]].direction*2*PI)/360);
         copper.y = rob[perm[i]].y+rob[perm[i]].speed*(copper.time)*sin((rob[perm[i]].direction*2*PI)/360);
       }
-      if ( j == 0 ) minTime = copper.time ;
+      // Keep the smallest time of all the ones that get calculated
+      if ( j == 0 ) minTime = copper.time ; // First time calculated get assigned regardlessly
       else{
-        if ( copper.time < minTime) minTime = copper.time ;
+        if ( copper.time < minTime) minTime = copper.time ; // change minTime if calculated is smaller
       }
-      free(perm);
+      free(perm); // Done with this specific permutation order
     }
 
-    printf("minTime:%f\n",minTime);
+    printf("minTime:%0.02f\n",minTime); // We should have the minimum time righ there
     free(rob); // Done with robbers, tried every permutation
   }
 }
+
+
+
+
+
 /*
- * Implements a binary search. Starting with a huge interval, will increment by inc and then decrement by inc/2
+ * - Implements a binary search. Starting with a huge interval, will increment by inc and then decrement by inc/2
  * then increment inc/4 then decrement by inc/8 until diff is 0.00000001 where it will break and return the found time
- **/
+ * - Initially increment using large intervals until copSpd*time becomes greater than distchase
+ *   Then divide the interval in half.
+ *   Check if the difference is very very small, if it is then break out
+ *   Start decrementing by the divided interval until copSpd*time becomes less than.
+ *   Then divide the interval in half and reiterate
+ */
 double getMinTime(Cop copper,Robber rob){
   double distChase =10;
   double time = 0.0;
@@ -122,7 +137,7 @@ double getMinTime(Cop copper,Robber rob){
 
     if (copper.speed*time-distChase < 0.00000001) break; // Guaranteed that copper.speed*time - distChase > 0
 
-    ///////////////////////////// Shrink the incrementor ////////////////////////////////////////
+    ///////////////////////////// Divide the intervall ////////////////////////////////////////
     inc/=2; // Divide the increment in half and decrement at smaller and smaller intervals until copSpd*time < distChase
 
 
@@ -136,15 +151,15 @@ double getMinTime(Cop copper,Robber rob){
       time-=inc;
       distChase = pow((pow((rob.x+rob.speed*(copper.time+time)*cos((rob.direction*2*PI)/360)-copper.x),2)+pow((rob.y+rob.speed*(copper.time+time)*sin((rob.direction*2*PI)/360)-copper.y),2)),0.5);
     }
-    if (distChase-copper.speed*time< 0.00000001) break; // Guaranteed that distChase - copper.speed*time > 0  because decremented until copper.speed*time is less than dist
-    ///////////////////////////// Shrink the incrementor ////////////////////////////////////////
+    if (distChase-copper.speed*time< 0.00000001) break; // At this point we know distChase > copper.speed*time
+    ///////////////////////////// Divide the interval ////////////////////////////////////////
     inc/=2; // Divide the increment in half for the next iteration where it will increment at even smaller intervals
   }
   return time ;
 }
 
 /*
- * Creates a robber instance with given parameter as fields and returns it
+ * Creates a robber instance with given parameter as fields
  */
 Robber initRobber(int x, int y, int speed, int direction){
   Robber rtn  ;

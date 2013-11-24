@@ -14,7 +14,6 @@ typedef struct {
 
 void readAndExecute();
 double getMinTime(Cop copper,Robber rob);
-double getNewPos(Robber rob , double time, int xOrY);
 Robber initRobber(int x, int y, int speed, int direction);
 void readRobbers(Robber ** rob , int numRobbers);
 int * ithPermutation(const int n, int i);
