@@ -103,7 +103,7 @@ void readAndExecute(){
       free(perm); // Done with this specific permutation order
     }
 
-    printf("minTime:%0.02f\n",minTime); // We should have the minimum time righ there
+    printf("%0.02f\n",minTime); // We should have the minimum time righ there
     free(rob); // Done with robbers, tried every permutation
   }
 }
