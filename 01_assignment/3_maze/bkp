@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "maze.h"
+
+void printnext(struct stack ** root){
+	if ( *root!=NULL ){
+		if ( (*root)->next == NULL ) printf("\e[38;5;26m(%d %d)\e[0m\n",(*root)->coord[0],(*root)->coord[1]);
+		else{
+			printf("(%d %d)",(*root)->coord[0],(*root)->coord[1]);
+			printnext(&((*root)->next));
+		}
+	}
+	else{
+		printf("");
+	}
+}
+
+void print(struct stack ** root){
+	printf("\e[38;5;26m(%d %d)\e[0m",(*root)->coord[0],(*root)->coord[1]);
+	printnext(&((*root)->next));
+}
+
+int main(){
+	struct stack * s = alloc(5,3);
+	s = push(push(push(push(push(s,alloc(3,5)),alloc(1,4)),alloc(13,2)),alloc(18,2)),alloc(12,3));
+	print(&s);
+    printf("\n\n");
+
+	struct stack * top ;
+    printf("pop: ");
+	top = pop(&s);
+	print(&top);
+    printf("\n");
+	print(&s);
+    printf("\n\n");
+
+    struct stack * bottom = getBottomPtr(&s);
+
+    printf("getBottomPtr: ");
+	print(&bottom);
+    printf("\n");
+	print(&s);
+    printf("\n\n");
+
+    bottom = popBottom(&s);
+    printf("popBottom: ");
+	print(&bottom);
+    printf("\n");
+	print(&s);
+    printf("\n\n");
+}

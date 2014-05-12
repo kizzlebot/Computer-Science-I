@@ -1,0 +1,9 @@
+Brute Force - Try every possibility 
+- Memorization doesn't work!
+- cs.ucf.edu/~dmarino 
+
+
+C-Strings
+- char word[20];
+- Strings are null terminated, or in other words, you must manually insert that null at the end
+- #include <string.h>
